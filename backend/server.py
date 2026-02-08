@@ -436,6 +436,50 @@ async def admin_get_categories(admin: dict = Depends(get_admin_user)):
     categories = await db.categories.find({}, {"_id": 0}).to_list(100)
     return categories
 
+# Admin Hero Slides
+@admin_router.get("/hero-slides")
+async def admin_get_hero_slides(admin: dict = Depends(get_admin_user)):
+    slides = await db.hero_slides.find({}, {"_id": 0}).sort("order", 1).to_list(20)
+    return slides
+
+@admin_router.post("/hero-slides")
+async def admin_create_hero_slide(admin: dict = Depends(get_admin_user), image: str = "", link: str = "/collections"):
+    slide = {
+        "id": str(uuid.uuid4()),
+        "image": image,
+        "link": link,
+        "order": await db.hero_slides.count_documents({}) + 1,
+        "created_at": datetime.utcnow()
+    }
+    await db.hero_slides.insert_one(slide)
+    return slide
+
+@admin_router.put("/hero-slides/{slide_id}")
+async def admin_update_hero_slide(slide_id: str, admin: dict = Depends(get_admin_user), image: str = None, link: str = None, order: int = None):
+    slide = await db.hero_slides.find_one({"id": slide_id})
+    if not slide:
+        raise HTTPException(status_code=404, detail="Slide not found")
+    
+    update_data = {}
+    if image is not None:
+        update_data["image"] = image
+    if link is not None:
+        update_data["link"] = link
+    if order is not None:
+        update_data["order"] = order
+    
+    if update_data:
+        await db.hero_slides.update_one({"id": slide_id}, {"$set": update_data})
+    
+    return await db.hero_slides.find_one({"id": slide_id}, {"_id": 0})
+
+@admin_router.delete("/hero-slides/{slide_id}")
+async def admin_delete_hero_slide(slide_id: str, admin: dict = Depends(get_admin_user)):
+    result = await db.hero_slides.delete_one({"id": slide_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Slide not found")
+    return {"message": "Slide deleted"}
+
 @admin_router.post("/categories")
 async def admin_create_category(category_data: CategoryCreate, admin: dict = Depends(get_admin_user)):
     import uuid
