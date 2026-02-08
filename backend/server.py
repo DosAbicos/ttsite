@@ -236,7 +236,7 @@ async def admin_create_product(product_data: ProductCreate, admin: dict = Depend
 
 @admin_router.put("/products/{product_id}")
 async def admin_update_product(product_id: str, product_data: ProductUpdate, admin: dict = Depends(get_admin_user)):
-    product = await db.products.find_one({"id": product_id})
+    product = await db.products.find_one({"id": product_id}, {"_id": 0})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
@@ -245,7 +245,7 @@ async def admin_update_product(product_id: str, product_data: ProductUpdate, adm
     if update_data:
         await db.products.update_one({"id": product_id}, {"$set": update_data})
     
-    updated = await db.products.find_one({"id": product_id})
+    updated = await db.products.find_one({"id": product_id}, {"_id": 0})
     return updated
 
 @admin_router.delete("/products/{product_id}")
