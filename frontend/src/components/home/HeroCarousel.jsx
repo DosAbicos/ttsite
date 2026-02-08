@@ -1,13 +1,32 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { heroSlides } from '../../data/mock';
+import { heroSlides as defaultSlides } from '../../data/mock';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const HeroCarousel = () => {
+  const [heroSlides, setHeroSlides] = useState(defaultSlides);
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+
+  // Load slides from API
+  useEffect(() => {
+    const loadSlides = async () => {
+      try {
+        const response = await axios.get(`${BACKEND_URL}/api/hero-slides`);
+        if (response.data && response.data.length > 0) {
+          setHeroSlides(response.data);
+        }
+      } catch (error) {
+        console.log('Using default slides');
+      }
+    };
+    loadSlides();
+  }, []);
 
   // Duplicate slides for infinite scroll effect
   const extendedSlides = [...heroSlides, ...heroSlides, ...heroSlides];
