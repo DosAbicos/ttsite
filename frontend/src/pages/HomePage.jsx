@@ -4,7 +4,6 @@ import Footer from '../components/layout/Footer';
 import HeroCarousel from '../components/home/HeroCarousel';
 import CategoryCarousel from '../components/home/CategoryCarousel';
 import ProductGrid from '../components/home/ProductGrid';
-import PromoModal from '../components/promo/PromoModal';
 import AuthModal from '../components/auth/AuthModal';
 
 const HomePage = () => {
@@ -19,7 +18,6 @@ const HomePage = () => {
       </main>
 
       <Footer />
-      <PromoModal />
       <AuthModal />
     </div>
   );
