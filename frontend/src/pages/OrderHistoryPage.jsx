@@ -30,7 +30,7 @@ const OrderHistoryPage = () => {
 
   const loadOrders = async () => {
     try {
-      const response = await ordersAPI.getUserOrders();
+      const response = await ordersAPI.getMyOrders();
       setOrders(response.data || []);
     } catch (error) {
       console.error('Failed to load orders:', error);
