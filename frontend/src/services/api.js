@@ -43,6 +43,12 @@ export const ordersAPI = {
   getById: (id) => api.get(`/orders/${id}`),
 };
 
+// Stripe Checkout API
+export const checkoutAPI = {
+  createSession: (orderId, originUrl) => api.post('/checkout/create', { order_id: orderId, origin_url: originUrl }),
+  getStatus: (sessionId) => api.get(`/checkout/status/${sessionId}`),
+};
+
 // Admin API
 export const adminAPI = {
   // Products
