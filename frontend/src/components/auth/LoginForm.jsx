@@ -16,9 +16,13 @@ const LoginForm = () => {
     try {
       if (!email || !password) {
         setError('Please fill in all fields');
+        setLoading(false);
         return;
       }
-      await login(email, password);
+      const result = await login(email, password);
+      if (!result.success) {
+        setError(result.error);
+      }
     } catch (err) {
       setError('Invalid credentials');
     } finally {
@@ -63,6 +67,10 @@ const LoginForm = () => {
       >
         {loading ? 'Signing in...' : 'Sign In'}
       </button>
+      
+      <div className="text-center text-xs text-gray-500 pt-2">
+        Admin: admin@ddebuut.com / admin123
+      </div>
     </form>
   );
 };
