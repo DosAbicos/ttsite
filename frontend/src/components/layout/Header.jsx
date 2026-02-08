@@ -107,6 +107,16 @@ const Header = () => {
                     <p className="font-medium text-sm">{user.name}</p>
                     <p className="text-xs text-gray-500">{user.email}</p>
                   </div>
+                  <button
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      navigate('/orders');
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+                  >
+                    <Package className="w-4 h-4" />
+                    My Orders
+                  </button>
                   {user.is_admin && (
                     <button
                       onClick={() => {
