@@ -95,12 +95,48 @@ const Header = () => {
             >
               <Search className="w-5 h-5" />
             </button>
-            <button 
-              onClick={() => user ? null : openAuthModal('login')}
-              className="p-1 hover:opacity-70 transition-opacity"
-            >
-              <User className="w-5 h-5" />
-            </button>
+            
+            {/* User Menu */}
+            <div className="relative">
+              <button 
+                onClick={() => user ? setIsUserMenuOpen(!isUserMenuOpen) : openAuthModal('login')}
+                className="p-1 hover:opacity-70 transition-opacity"
+              >
+                <User className="w-5 h-5" />
+              </button>
+              
+              {user && isUserMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 shadow-lg rounded-md py-2 w-48 z-50">
+                  <div className="px-4 py-2 border-b">
+                    <p className="font-medium text-sm">{user.name}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </div>
+                  {user.is_admin && (
+                    <button
+                      onClick={() => {
+                        setIsUserMenuOpen(false);
+                        navigate('/admin');
+                      }}
+                      className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Admin Panel
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
+                      logout();
+                    }}
+                    className="w-full flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50 text-red-600"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+            
             <button 
               onClick={() => setIsCartOpen(true)}
               className="p-1 hover:opacity-70 transition-opacity relative"
