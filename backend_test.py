@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Backend API Test Suite for ddebuut.com Clone
-Testing endpoints at: https://nostalgic-rubin-1.preview.emergentagent.com/api
+Testing endpoints at: https://ecommerce-staging.preview.emergentagent.com/api
 """
 
 import requests
@@ -269,7 +269,7 @@ class BackendTester:
 
 def main():
     # Use the configured backend URL
-    backend_url = "https://nostalgic-rubin-1.preview.emergentagent.com"
+    backend_url = "https://ecommerce-staging.preview.emergentagent.com"
     
     tester = BackendTester(backend_url)
     all_passed = tester.run_all_tests()

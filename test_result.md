@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the ddebuut.com clone backend API at https://nostalgic-rubin-1.preview.emergentagent.com/api"
+user_problem_statement: "Test the ddebuut.com clone backend API at https://ecommerce-staging.preview.emergentagent.com/api"
 
 backend:
   - task: "API Root Endpoint"
