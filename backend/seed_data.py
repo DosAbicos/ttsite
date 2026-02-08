@@ -299,15 +299,6 @@ async def seed_database():
         await db.users.insert_one(admin_user)
         print("Created default admin user: admin@ddebuut.com / admin123")
     
-    # Seed reviews if empty
-    reviews_count = await db.reviews.count_documents({})
-    if reviews_count == 0:
-        print("Seeding reviews...")
-        for review in initial_reviews:
-            review["created_at"] = datetime.utcnow() if "created_at" not in review else review["created_at"]
-            await db.reviews.insert_one(review)
-        print(f"Inserted {len(initial_reviews)} reviews")
-    
     client.close()
 
 if __name__ == "__main__":
