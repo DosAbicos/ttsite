@@ -445,15 +445,16 @@ async def admin_get_hero_slides(admin: dict = Depends(get_admin_user)):
 
 @admin_router.post("/hero-slides")
 async def admin_create_hero_slide(slide_data: HeroSlideCreate, admin: dict = Depends(get_admin_user)):
+    slide_id = str(uuid.uuid4())
     slide = {
-        "id": str(uuid.uuid4()),
+        "id": slide_id,
         "image": slide_data.image,
         "link": slide_data.link,
         "order": slide_data.order if slide_data.order else await db.hero_slides.count_documents({}) + 1,
         "created_at": datetime.utcnow()
     }
     await db.hero_slides.insert_one(slide)
-    return {k: v for k, v in slide.items() if k != "_id"}
+    return await db.hero_slides.find_one({"id": slide_id}, {"_id": 0})
 
 @admin_router.put("/hero-slides/{slide_id}")
 async def admin_update_hero_slide(slide_id: str, slide_data: HeroSlideUpdate, admin: dict = Depends(get_admin_user)):
