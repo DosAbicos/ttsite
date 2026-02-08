@@ -73,6 +73,12 @@ export const adminAPI = {
     });
   },
   
+  // Hero Slides
+  getHeroSlides: () => api.get('/admin/hero-slides'),
+  createHeroSlide: (data) => api.post('/admin/hero-slides', data),
+  updateHeroSlide: (id, data) => api.put(`/admin/hero-slides/${id}`, data),
+  deleteHeroSlide: (id) => api.delete(`/admin/hero-slides/${id}`),
+  
   // Categories
   getCategories: () => api.get('/admin/categories'),
   createCategory: (data) => api.post('/admin/categories', data),
