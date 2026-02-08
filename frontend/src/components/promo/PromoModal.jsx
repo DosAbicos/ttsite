@@ -56,15 +56,11 @@ const PromoModal = () => {
           <div className="p-8 text-center">
             {/* Logo */}
             <div className="flex justify-center mb-6">
-              <svg viewBox="0 0 120 50" className="h-12 w-auto">
-                <ellipse cx="60" cy="25" rx="55" ry="20" fill="none" stroke="black" strokeWidth="2"/>
-                <text x="60" y="30" textAnchor="middle" fontSize="14" fontWeight="bold" fontFamily="serif">ddebuut</text>
-                <line x1="10" y1="10" x2="25" y2="20" stroke="black" strokeWidth="2"/>
-                <line x1="110" y1="10" x2="95" y2="20" stroke="black" strokeWidth="2"/>
-                <line x1="10" y1="40" x2="25" y2="30" stroke="black" strokeWidth="2"/>
-                <line x1="110" y1="40" x2="95" y2="30" stroke="black" strokeWidth="2"/>
-                <circle cx="60" cy="40" r="3" fill="black"/>
-              </svg>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_10858c60-76a7-4f64-8a00-602bbd38e584/artifacts/lahajuui_%D0%94%D0%B8%D0%B7%D0%B0%D0%B8%CC%86%D0%BD%20%D0%B1%D0%B5%D0%B7%20%D0%BD%D0%B0%D0%B7%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F%20%284%29.png"
+                alt="Songy"
+                className="h-12 w-auto"
+              />
             </div>
 
             {/* Discount */}
