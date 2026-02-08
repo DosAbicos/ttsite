@@ -1,5 +1,6 @@
 import React from 'react';
 import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
 import HeroCarousel from '../components/home/HeroCarousel';
 import CategoryCarousel from '../components/home/CategoryCarousel';
 import ProductGrid from '../components/home/ProductGrid';
@@ -17,6 +18,7 @@ const HomePage = () => {
         <ProductGrid title="Retro Series" category="retro-series" limit={12} />
       </main>
 
+      <Footer />
       <PromoModal />
       <AuthModal />
     </div>
