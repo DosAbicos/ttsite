@@ -288,7 +288,6 @@ async def seed_database():
     admin_exists = await db.users.find_one({"email": "admin@ddebuut.com"})
     if not admin_exists:
         from auth import get_password_hash
-        from datetime import datetime
         admin_user = {
             "id": "admin-1",
             "email": "admin@ddebuut.com",
