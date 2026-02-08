@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X, Save } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Plus, Edit, Trash2, X, Save, Upload, Link, Image } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { adminAPI } from '../../services/api';
 
@@ -9,6 +9,8 @@ const AdminProducts = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
