@@ -41,6 +41,13 @@ db = client[os.environ.get('DB_NAME', 'ddebuut')]
 # Create the main app
 app = FastAPI(title="ddebuut API")
 
+# Setup uploads directory
+UPLOADS_DIR = ROOT_DIR / "uploads"
+UPLOADS_DIR.mkdir(exist_ok=True)
+
+# Mount static files for uploads
+app.mount("/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
+
 # Create routers
 api_router = APIRouter(prefix="/api")
 admin_router = APIRouter(prefix="/api/admin")
