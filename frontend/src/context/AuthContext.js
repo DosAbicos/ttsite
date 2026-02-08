@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { authAPI } from '../services/api';
 
 const AuthContext = createContext();
 
@@ -11,48 +12,61 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('user');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authMode, setAuthMode] = useState('login'); // 'login' or 'register'
+  const [authMode, setAuthMode] = useState('login');
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
-    }
-  }, [user]);
+    checkAuth();
+  }, []);
 
-  const login = (email, password) => {
-    // Mock login - in production would call API
-    const mockUser = {
-      id: 1,
-      email,
-      name: email.split('@')[0],
-      createdAt: new Date().toISOString()
-    };
-    setUser(mockUser);
-    setIsAuthModalOpen(false);
-    return { success: true };
+  const checkAuth = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const response = await authAPI.getMe();
+        setUser(response.data);
+      } catch (error) {
+        localStorage.removeItem('token');
+        setUser(null);
+      }
+    }
+    setLoading(false);
   };
 
-  const register = (email, password, name) => {
-    // Mock register - in production would call API
-    const mockUser = {
-      id: Date.now(),
-      email,
-      name,
-      createdAt: new Date().toISOString()
-    };
-    setUser(mockUser);
-    setIsAuthModalOpen(false);
-    return { success: true };
+  const login = async (email, password) => {
+    try {
+      const response = await authAPI.login(email, password);
+      localStorage.setItem('token', response.data.access_token);
+      await checkAuth();
+      setIsAuthModalOpen(false);
+      return { success: true };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.detail || 'Invalid credentials' 
+      };
+    }
+  };
+
+  const register = async (email, password, name) => {
+    try {
+      const response = await authAPI.register(email, password, name);
+      localStorage.setItem('token', response.data.access_token);
+      await checkAuth();
+      setIsAuthModalOpen(false);
+      return { success: true };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.detail || 'Registration failed' 
+      };
+    }
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
     setUser(null);
   };
 
@@ -60,6 +74,14 @@ export const AuthProvider = ({ children }) => {
     setAuthMode(mode);
     setIsAuthModalOpen(true);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider value={{
