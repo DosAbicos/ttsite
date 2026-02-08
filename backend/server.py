@@ -302,7 +302,7 @@ async def admin_delete_category(category_id: str, admin: dict = Depends(get_admi
 # Admin Orders
 @admin_router.get("/orders")
 async def admin_get_orders(admin: dict = Depends(get_admin_user)):
-    orders = await db.orders.find().sort("created_at", -1).to_list(1000)
+    orders = await db.orders.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return orders
 
 @admin_router.put("/orders/{order_id}/status")
