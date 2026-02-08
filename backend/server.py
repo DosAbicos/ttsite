@@ -444,30 +444,24 @@ async def admin_get_hero_slides(admin: dict = Depends(get_admin_user)):
     return slides
 
 @admin_router.post("/hero-slides")
-async def admin_create_hero_slide(admin: dict = Depends(get_admin_user), image: str = "", link: str = "/collections"):
+async def admin_create_hero_slide(slide_data: HeroSlideCreate, admin: dict = Depends(get_admin_user)):
     slide = {
         "id": str(uuid.uuid4()),
-        "image": image,
-        "link": link,
-        "order": await db.hero_slides.count_documents({}) + 1,
+        "image": slide_data.image,
+        "link": slide_data.link,
+        "order": slide_data.order if slide_data.order else await db.hero_slides.count_documents({}) + 1,
         "created_at": datetime.utcnow()
     }
     await db.hero_slides.insert_one(slide)
-    return slide
+    return {k: v for k, v in slide.items() if k != "_id"}
 
 @admin_router.put("/hero-slides/{slide_id}")
-async def admin_update_hero_slide(slide_id: str, admin: dict = Depends(get_admin_user), image: str = None, link: str = None, order: int = None):
+async def admin_update_hero_slide(slide_id: str, slide_data: HeroSlideUpdate, admin: dict = Depends(get_admin_user)):
     slide = await db.hero_slides.find_one({"id": slide_id})
     if not slide:
         raise HTTPException(status_code=404, detail="Slide not found")
     
-    update_data = {}
-    if image is not None:
-        update_data["image"] = image
-    if link is not None:
-        update_data["link"] = link
-    if order is not None:
-        update_data["order"] = order
+    update_data = {k: v for k, v in slide_data.dict().items() if v is not None}
     
     if update_data:
         await db.hero_slides.update_one({"id": slide_id}, {"$set": update_data})
