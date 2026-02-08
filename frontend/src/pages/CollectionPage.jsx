@@ -1,16 +1,19 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { ChevronDown, Search, ShoppingBag } from 'lucide-react';
 import Header from '../components/layout/Header';
 import AuthModal from '../components/auth/AuthModal';
 import QuickViewModal from '../components/product/QuickViewModal';
-import { products, categories } from '../data/mock';
+import { productsAPI, categoriesAPI } from '../services/api';
 import { useCart } from '../context/CartContext';
 import { Link } from 'react-router-dom';
 
 const CollectionPage = () => {
   const { slug } = useParams();
   const { addToCart } = useCart();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalProducts, setTotalProducts] = useState(0);
   const [sortBy, setSortBy] = useState('recommended');
   const [filterAvailability, setFilterAvailability] = useState('all');
   const [priceRange, setPriceRange] = useState('all');
@@ -20,34 +23,43 @@ const CollectionPage = () => {
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [hoveredProduct, setHoveredProduct] = useState(null);
 
-  const category = categories.find(c => c.slug === slug);
+  useEffect(() => {
+    loadProducts();
+  }, [slug, sortBy, priceRange]);
 
-  // For now, show all products for any collection
-  const filteredProducts = useMemo(() => {
-    let result = [...products];
-
-    // Price filter
-    if (priceRange === 'under10') {
-      result = result.filter(p => p.price < 10);
-    } else if (priceRange === '10to50') {
-      result = result.filter(p => p.price >= 10 && p.price <= 50);
-    } else if (priceRange === 'over50') {
-      result = result.filter(p => p.price > 50);
+  const loadProducts = async () => {
+    setLoading(true);
+    try {
+      const params = {
+        sort: sortBy,
+        limit: 50
+      };
+      
+      // Add category filter if we have a slug
+      if (slug) {
+        params.category = slug;
+      }
+      
+      // Add price filter
+      if (priceRange === 'under10') {
+        params.max_price = 10;
+      } else if (priceRange === '10to50') {
+        params.min_price = 10;
+        params.max_price = 50;
+      } else if (priceRange === 'over50') {
+        params.min_price = 50;
+      }
+      
+      const response = await productsAPI.getAll(params);
+      setProducts(response.data.products || []);
+      setTotalProducts(response.data.total || 0);
+    } catch (error) {
+      console.error('Failed to load products:', error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
     }
-
-    // Sort
-    if (sortBy === 'price-low') {
-      result.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'price-high') {
-      result.sort((a, b) => b.price - a.price);
-    } else if (sortBy === 'name-az') {
-      result.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortBy === 'name-za') {
-      result.sort((a, b) => b.name.localeCompare(a.name));
-    }
-
-    return result;
-  }, [priceRange, sortBy]);
+  };
 
   const handleQuickAdd = (e, product) => {
     e.preventDefault();
@@ -212,70 +224,86 @@ const CollectionPage = () => {
 
             {/* Items count */}
             <span className="text-sm text-gray-500">
-              {filteredProducts.length} items
+              {totalProducts} items
             </span>
           </div>
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <div key={product.id} className="group">
-              <Link
-                to={`/product/${product.slug}`}
-                className="block relative"
-                onMouseEnter={() => setHoveredProduct(product.id)}
-                onMouseLeave={() => setHoveredProduct(null)}
-              >
-                <div className="aspect-[4/5] bg-gray-50 overflow-hidden relative">
-                  <img
-                    src={
-                      hoveredProduct === product.id && product.images[1]
-                        ? product.images[1]
-                        : product.images[0]
-                    }
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-all duration-500"
-                  />
+        {loading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="aspect-[4/5] bg-gray-200 rounded"></div>
+                <div className="mt-3 h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="mt-2 h-4 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {products.map((product) => (
+              <div key={product.id} className="group">
+                <Link
+                  to={`/product/${product.slug}`}
+                  className="block relative"
+                  onMouseEnter={() => setHoveredProduct(product.id)}
+                  onMouseLeave={() => setHoveredProduct(null)}
+                >
+                  <div className="aspect-[4/5] bg-gray-50 overflow-hidden relative">
+                    <img
+                      src={
+                        hoveredProduct === product.id && product.images?.[1]
+                          ? product.images[1]
+                          : product.images?.[0]
+                      }
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-all duration-500"
+                    />
 
-                  {/* Action buttons */}
-                  <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setQuickViewProduct(product);
-                      }}
-                      className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
-                      title="Quick view"
-                    >
-                      <Search className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={(e) => handleQuickAdd(e, product)}
-                      className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
-                      title="Add to cart"
-                    >
-                      <ShoppingBag className="w-4 h-4" />
-                    </button>
+                    {/* Action buttons */}
+                    <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setQuickViewProduct(product);
+                        }}
+                        className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+                        title="Quick view"
+                      >
+                        <Search className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e) => handleQuickAdd(e, product)}
+                        className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+                        title="Add to cart"
+                      >
+                        <ShoppingBag className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </Link>
+
+                <div className="mt-3">
+                  <h3 className="text-sm font-medium mb-1">{product.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold">
+                      ${product.price?.toFixed(2)} USD
+                    </span>
+                    <span className="text-sm text-gray-400 line-through">
+                      ${product.original_price?.toFixed(2)} USD
+                    </span>
                   </div>
                 </div>
-              </Link>
-
-              <div className="mt-3">
-                <h3 className="text-sm font-medium mb-1">{product.name}</h3>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-semibold">
-                    ${product.price.toFixed(2)} USD
-                  </span>
-                  <span className="text-sm text-gray-400 line-through">
-                    ${product.originalPrice.toFixed(2)} USD
-                  </span>
-                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
+
+        {!loading && products.length === 0 && (
+          <p className="text-center text-gray-500 py-12">No products found</p>
+        )}
       </main>
 
       {quickViewProduct && (
