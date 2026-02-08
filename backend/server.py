@@ -280,7 +280,7 @@ async def admin_create_category(category_data: CategoryCreate, admin: dict = Dep
 
 @admin_router.put("/categories/{category_id}")
 async def admin_update_category(category_id: str, category_data: CategoryUpdate, admin: dict = Depends(get_admin_user)):
-    category = await db.categories.find_one({"id": category_id})
+    category = await db.categories.find_one({"id": category_id}, {"_id": 0})
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     
@@ -289,7 +289,7 @@ async def admin_update_category(category_id: str, category_data: CategoryUpdate,
     if update_data:
         await db.categories.update_one({"id": category_id}, {"$set": update_data})
     
-    updated = await db.categories.find_one({"id": category_id})
+    updated = await db.categories.find_one({"id": category_id}, {"_id": 0})
     return updated
 
 @admin_router.delete("/categories/{category_id}")
