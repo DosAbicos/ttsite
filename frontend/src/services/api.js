@@ -85,6 +85,12 @@ export const adminAPI = {
   updateCategory: (id, data) => api.put(`/admin/categories/${id}`, data),
   deleteCategory: (id) => api.delete(`/admin/categories/${id}`),
   
+  // Reviews (Fake Reviews Management)
+  getReviews: () => api.get('/admin/reviews'),
+  createReview: (data) => api.post('/admin/reviews', data),
+  updateReview: (id, data) => api.put(`/admin/reviews/${id}`, data),
+  deleteReview: (id) => api.delete(`/admin/reviews/${id}`),
+  
   // Orders
   getOrders: () => api.get('/admin/orders'),
   updateOrderStatus: (id, status) => api.put(`/admin/orders/${id}/status`, { status }),
