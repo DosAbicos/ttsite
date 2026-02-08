@@ -330,6 +330,44 @@ async def can_review_product(product_identifier: str, user_id: str = Depends(get
 
 # ============ Admin Routes ============
 
+# File Upload for Images
+ALLOWED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp'}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+
+@admin_router.post("/upload")
+async def upload_image(
+    file: UploadFile = File(...),
+    admin: dict = Depends(get_admin_user),
+    request: Request = None
+):
+    """Upload an image file and return its URL"""
+    # Check file extension
+    file_ext = Path(file.filename).suffix.lower()
+    if file_ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Invalid file type. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
+    
+    # Check file size
+    contents = await file.read()
+    if len(contents) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail="File too large. Max 5MB allowed.")
+    
+    # Generate unique filename
+    unique_filename = f"{uuid.uuid4()}{file_ext}"
+    file_path = UPLOADS_DIR / unique_filename
+    
+    # Save file
+    with open(file_path, "wb") as f:
+        f.write(contents)
+    
+    # Generate URL
+    base_url = str(request.base_url).rstrip('/')
+    image_url = f"{base_url}/uploads/{unique_filename}"
+    
+    return {"url": image_url, "filename": unique_filename}
+
 # Admin Products
 @admin_router.get("/products")
 async def admin_get_products(admin: dict = Depends(get_admin_user)):
