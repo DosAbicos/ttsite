@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Minus, Plus, ChevronRight } from 'lucide-react';
 import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
 import AuthModal from '../components/auth/AuthModal';
+import RecommendedProducts from '../components/product/RecommendedProducts';
 import { productsAPI } from '../services/api';
 import { useCart } from '../context/CartContext';
 
