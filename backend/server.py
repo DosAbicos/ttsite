@@ -221,9 +221,19 @@ async def get_order(order_id: str, user_id: Optional[str] = Depends(get_current_
     return order
 
 # ============ Review Routes ============
-@api_router.get("/products/{product_id}/reviews")
-async def get_product_reviews(product_id: str):
-    """Get all reviews for a product"""
+@api_router.get("/products/{product_identifier}/reviews")
+async def get_product_reviews(product_identifier: str):
+    """Get all reviews for a product (by id or slug)"""
+    # First try to find product by slug
+    product = await db.products.find_one({"slug": product_identifier}, {"_id": 0, "id": 1})
+    if not product:
+        # Try by id
+        product = await db.products.find_one({"id": product_identifier}, {"_id": 0, "id": 1})
+    
+    if not product:
+        return []
+    
+    product_id = product["id"]
     reviews = await db.reviews.find({"product_id": product_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
     return reviews
 
