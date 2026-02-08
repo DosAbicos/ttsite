@@ -49,6 +49,13 @@ export const checkoutAPI = {
   getStatus: (sessionId) => api.get(`/checkout/status/${sessionId}`),
 };
 
+// Reviews API
+export const reviewsAPI = {
+  getProductReviews: (productId) => api.get(`/products/${productId}/reviews`),
+  createReview: (reviewData) => api.post('/reviews', reviewData),
+  canReview: (productId) => api.get(`/reviews/can-review/${productId}`),
+};
+
 // Admin API
 export const adminAPI = {
   // Products
