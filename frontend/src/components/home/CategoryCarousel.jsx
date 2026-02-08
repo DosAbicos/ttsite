@@ -1,12 +1,46 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { categories } from '../../data/mock';
+import { categoriesAPI } from '../../services/api';
 
 const CategoryCarousel = () => {
   const scrollRef = useRef(null);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = async () => {
+    try {
+      const response = await categoriesAPI.getAll();
+      setCategories(response.data || []);
+    } catch (error) {
+      console.error('Failed to load categories:', error);
+      setCategories([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Duplicate for infinite scroll effect
   const extendedCategories = [...categories, ...categories];
+
+  if (loading) {
+    return (
+      <section className="py-12">
+        <h2 className="text-center text-2xl font-serif mb-8">Recommended</h2>
+        <div className="flex gap-6 px-6 overflow-hidden">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex-shrink-0 animate-pulse">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-gray-200"></div>
+              <div className="mt-3 h-4 bg-gray-200 rounded w-24 mx-auto"></div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-12">
