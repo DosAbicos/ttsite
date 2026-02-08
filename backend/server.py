@@ -221,7 +221,7 @@ async def get_order(order_id: str, user_id: Optional[str] = Depends(get_current_
     return order
 
 # ============ Review Routes ============
-@api_router.get("/products/{product_identifier}/reviews")
+@api_router.get("/reviews/product/{product_identifier}")
 async def get_product_reviews(product_identifier: str):
     """Get all reviews for a product (by id or slug)"""
     # First try to find product by slug
