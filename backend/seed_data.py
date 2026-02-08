@@ -279,7 +279,6 @@ async def seed_database():
     prod_count = await db.products.count_documents({})
     if prod_count == 0:
         print("Seeding products...")
-        from datetime import datetime
         for prod in initial_products:
             prod["created_at"] = datetime.utcnow() if "created_at" not in prod else prod["created_at"]
             await db.products.insert_one(prod)
