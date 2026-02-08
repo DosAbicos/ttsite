@@ -155,3 +155,24 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     user_id: Optional[str] = None
+
+# ============ Hero Slide Models ============
+class HeroSlideBase(BaseModel):
+    image: str
+    link: str = "/collections"
+
+class HeroSlideCreate(HeroSlideBase):
+    order: Optional[int] = None
+
+class HeroSlideUpdate(BaseModel):
+    image: Optional[str] = None
+    link: Optional[str] = None
+    order: Optional[int] = None
+
+class HeroSlide(HeroSlideBase):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    order: int = 1
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        from_attributes = True
