@@ -231,11 +231,17 @@ async def create_order(order_data: OrderCreate, user_id: Optional[str] = Depends
         subtotal += current_price * item.quantity
         total_shipping += product_shipping
     
-    # Calculate shipping: free if subtotal >= 39, otherwise use product shipping costs or $5.99 minimum
+    # Calculate shipping based on product shipping costs
+    # If all products have shipping_cost = 0, shipping is free
+    # If subtotal >= 39, shipping is free
+    # Otherwise, use sum of product shipping costs
     if subtotal >= 39:
         shipping_cost = 0
+    elif total_shipping > 0:
+        shipping_cost = total_shipping
     else:
-        shipping_cost = total_shipping if total_shipping > 0 else 5.99
+        # All products have free shipping
+        shipping_cost = 0
     
     total = round(subtotal + shipping_cost, 2)
     
