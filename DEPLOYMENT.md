@@ -1,6 +1,60 @@
 # Songy - Инструкция по деплою на продакшн
 
-## Вариант 1: Деплой через Emergent (Рекомендуется)
+## Вариант 1: Бесплатный хостинг (Рекомендуется для старта)
+
+### Railway (Рекомендуется)
+**Бесплатно:** $5 кредит в месяц (достаточно для небольшого магазина)
+
+1. Зарегистрируйтесь на [railway.app](https://railway.app)
+2. Нажмите "New Project" → "Deploy from GitHub"
+3. Выберите ваш репозиторий
+4. Railway автоматически определит стек и настроит деплой
+5. Добавьте переменные окружения:
+   - `MONGO_URL` - MongoDB Atlas URI (бесплатно)
+   - `STRIPE_API_KEY` - ваш ключ Stripe
+   - `JWT_SECRET` - случайная строка для токенов
+6. Railway даст URL вида: `https://songy-production.up.railway.app`
+
+### Render (Альтернатива)
+**Бесплатно:** Базовый тариф с ограничениями
+
+1. Зарегистрируйтесь на [render.com](https://render.com)
+2. Создайте "Web Service" из GitHub
+3. Настройте:
+   - Build Command: `pip install -r requirements.txt`
+   - Start Command: `uvicorn server:app --host 0.0.0.0 --port $PORT`
+4. Для фронтенда создайте "Static Site"
+5. Добавьте переменные окружения
+
+### Vercel + Railway
+**Идеально для React + Python:**
+
+1. **Frontend на Vercel (бесплатно):**
+   - [vercel.com](https://vercel.com) → Import Project
+   - Выберите папку `frontend`
+   - Добавьте `REACT_APP_BACKEND_URL=https://your-backend.railway.app`
+
+2. **Backend на Railway:**
+   - Деплой папки `backend` на Railway
+   - Настройте MongoDB Atlas
+
+### MongoDB Atlas (Бесплатная база данных)
+
+1. Зарегистрируйтесь на [mongodb.com/cloud/atlas](https://mongodb.com/cloud/atlas)
+2. Создайте бесплатный кластер (M0 Sandbox - 512MB)
+3. В Security → Database Access создайте пользователя
+4. В Network Access добавьте `0.0.0.0/0` (разрешить все IP)
+5. Нажмите Connect → Drivers → скопируйте connection string
+6. Замените `<password>` на ваш пароль
+
+**Пример строки подключения:**
+```
+mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/songy?retryWrites=true&w=majority
+```
+
+---
+
+## Вариант 2: Деплой через Emergent (1-клик)
 
 ### Шаг 1: Сохранить код на GitHub
 1. В чате Emergent нажмите кнопку **"Save to GitHub"** в нижней части поля ввода
