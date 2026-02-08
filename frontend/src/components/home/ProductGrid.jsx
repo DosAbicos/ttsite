@@ -1,26 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ShoppingBag } from 'lucide-react';
-import { products } from '../../data/mock';
+import { productsAPI } from '../../services/api';
 import { useCart } from '../../context/CartContext';
 import QuickViewModal from '../product/QuickViewModal';
 
 const ProductGrid = ({ title, category, limit }) => {
   const { addToCart } = useCart();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [hoveredProduct, setHoveredProduct] = useState(null);
 
-  const filteredProducts = category
-    ? products.filter(p => p.category === category)
-    : products;
+  useEffect(() => {
+    loadProducts();
+  }, [category]);
 
-  const displayProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts;
+  const loadProducts = async () => {
+    try {
+      const params = {};
+      if (category) params.category = category;
+      if (limit) params.limit = limit;
+      
+      const response = await productsAPI.getAll(params);
+      setProducts(response.data.products || []);
+    } catch (error) {
+      console.error('Failed to load products:', error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleQuickAdd = (e, product) => {
     e.preventDefault();
     e.stopPropagation();
     addToCart(product, product.sizes[0], product.colors[0], 1);
   };
+
+  if (loading) {
+    return (
+      <section className="py-12 px-6">
+        {title && (
+          <h2 className="text-center text-2xl font-serif mb-8">{title}</h2>
+        )}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="animate-pulse">
+              <div className="aspect-[4/5] bg-gray-200 rounded"></div>
+              <div className="mt-3 h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="mt-2 h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-12 px-6">
@@ -29,7 +64,7 @@ const ProductGrid = ({ title, category, limit }) => {
       )}
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-        {displayProducts.map((product) => (
+        {products.map((product) => (
           <div key={product.id} className="group">
             <Link
               to={`/product/${product.slug}`}
@@ -39,7 +74,7 @@ const ProductGrid = ({ title, category, limit }) => {
             >
               <div className="aspect-[4/5] bg-gray-50 overflow-hidden relative">
                 <img
-                  src={hoveredProduct === product.id && product.images[1] ? product.images[1] : product.images[0]}
+                  src={hoveredProduct === product.id && product.images?.[1] ? product.images[1] : product.images?.[0]}
                   alt={product.name}
                   className="w-full h-full object-cover transition-all duration-500"
                 />
@@ -72,10 +107,10 @@ const ProductGrid = ({ title, category, limit }) => {
               <h3 className="text-sm font-medium mb-1 truncate">{product.name}</h3>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold">
-                  ${product.price.toFixed(2)} USD
+                  ${product.price?.toFixed(2)} USD
                 </span>
                 <span className="text-sm text-gray-400 line-through">
-                  ${product.originalPrice.toFixed(2)} USD
+                  ${product.original_price?.toFixed(2)} USD
                 </span>
               </div>
             </div>
@@ -83,7 +118,11 @@ const ProductGrid = ({ title, category, limit }) => {
         ))}
       </div>
 
-      {category && (
+      {products.length === 0 && (
+        <p className="text-center text-gray-500 py-8">No products found</p>
+      )}
+
+      {category && products.length > 0 && (
         <div className="text-center mt-8">
           <Link
             to={`/collections/${category}`}
