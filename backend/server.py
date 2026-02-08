@@ -89,7 +89,7 @@ async def get_me(user_id: str = Depends(get_current_user)):
 # ============ Public Category Routes ============
 @api_router.get("/categories", response_model=List[Category])
 async def get_categories():
-    categories = await db.categories.find().to_list(100)
+    categories = await db.categories.find({}, {"_id": 0}).to_list(100)
     return categories
 
 @api_router.get("/categories/{slug}")
