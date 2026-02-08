@@ -340,7 +340,66 @@ const AdminProducts = () => {
 
               {/* Images */}
               <div>
-                <label className="block text-sm font-medium mb-1">Images (URLs)</label>
+                <label className="block text-sm font-medium mb-2">Images</label>
+                
+                {/* Upload Button */}
+                <div className="mb-4">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.webp"
+                    multiple
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    id="image-upload"
+                  />
+                  <label
+                    htmlFor="image-upload"
+                    className={`inline-flex items-center gap-2 px-4 py-2 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${
+                      uploading 
+                        ? 'border-gray-300 bg-gray-50 text-gray-400 cursor-not-allowed' 
+                        : 'border-blue-300 hover:border-blue-500 hover:bg-blue-50 text-blue-600'
+                    }`}
+                  >
+                    <Upload className="w-5 h-5" />
+                    {uploading ? 'Uploading...' : 'Upload Images'}
+                  </label>
+                  <span className="ml-3 text-sm text-gray-500">
+                    JPG, PNG, WebP (max 5MB)
+                  </span>
+                </div>
+
+                {/* Image Previews */}
+                {formData.images.filter(img => img.trim()).length > 0 && (
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {formData.images.filter(img => img.trim()).map((img, idx) => (
+                      <div key={idx} className="relative group">
+                        <img
+                          src={img}
+                          alt={`Preview ${idx + 1}`}
+                          className="w-20 h-24 object-cover rounded border"
+                          onError={(e) => e.target.src = 'https://via.placeholder.com/80x96?text=Error'}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const filtered = formData.images.filter(i => i !== img);
+                            setFormData(prev => ({ ...prev, images: filtered.length ? filtered : [''] }));
+                          }}
+                          className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* URL Input */}
+                <div className="flex items-center gap-2 mb-2 text-sm text-gray-500">
+                  <Link className="w-4 h-4" />
+                  <span>Or add by URL:</span>
+                </div>
                 {formData.images.map((img, idx) => (
                   <div key={idx} className="flex gap-2 mb-2">
                     <input
@@ -348,7 +407,7 @@ const AdminProducts = () => {
                       value={img}
                       onChange={(e) => updateArrayField('images', idx, e.target.value)}
                       placeholder="https://..."
-                      className="flex-1 px-3 py-2 border rounded focus:outline-none focus:border-black"
+                      className="flex-1 px-3 py-2 border rounded focus:outline-none focus:border-black text-sm"
                     />
                     {formData.images.length > 1 && (
                       <button
@@ -366,7 +425,7 @@ const AdminProducts = () => {
                   onClick={() => addArrayField('images')}
                   className="text-sm text-blue-600 hover:underline"
                 >
-                  + Add image
+                  + Add URL field
                 </button>
               </div>
 
