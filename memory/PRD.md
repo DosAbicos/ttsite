@@ -26,6 +26,7 @@ Create a 100% functional, multi-page clone of the e-commerce website `https://dd
 - [x] Orders management
 - [x] Users management
 - [x] Dashboard with stats
+- [x] Image upload for products (file upload + URL support) - Added 2026-02-08
 
 ### Payments (Completed)
 - [x] Stripe integration
