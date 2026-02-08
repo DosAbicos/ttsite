@@ -1,22 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Minus, Plus, ChevronRight } from 'lucide-react';
 import Header from '../components/layout/Header';
 import AuthModal from '../components/auth/AuthModal';
-import { products } from '../data/mock';
+import { productsAPI } from '../services/api';
 import { useCart } from '../context/CartContext';
 
 const ProductPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { addToCart, setIsCartOpen } = useCart();
-
-  const product = products.find((p) => p.slug === slug);
-
-  const [selectedSize, setSelectedSize] = useState(product?.sizes[0] || '');
-  const [selectedColor, setSelectedColor] = useState(product?.colors[0] || '');
+  
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    loadProduct();
+  }, [slug]);
+
+  const loadProduct = async () => {
+    try {
+      const response = await productsAPI.getBySlug(slug);
+      const productData = response.data;
+      setProduct(productData);
+      setSelectedSize(productData.sizes?.[0] || '');
+      setSelectedColor(productData.colors?.[0] || '');
+    } catch (error) {
+      console.error('Failed to load product:', error);
+      setProduct(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="flex items-center justify-center h-96">
+          <div className="text-gray-500">Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -47,6 +77,8 @@ const ProductPage = () => {
     navigate('/checkout');
   };
 
+  const discount = Math.round((1 - product.price / product.original_price) * 100);
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -59,10 +91,10 @@ const ProductPage = () => {
           </button>
           <ChevronRight className="w-4 h-4" />
           <button
-            onClick={() => navigate('/collections/retro-series')}
+            onClick={() => navigate('/collections')}
             className="hover:text-black"
           >
-            Retro Series
+            Collections
           </button>
           <ChevronRight className="w-4 h-4" />
           <span className="text-black">{product.name}</span>
@@ -73,13 +105,13 @@ const ProductPage = () => {
           <div>
             <div className="aspect-[4/5] bg-gray-50 mb-4 overflow-hidden">
               <img
-                src={product.images[currentImageIndex]}
+                src={product.images?.[currentImageIndex]}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="flex gap-3">
-              {product.images.map((img, idx) => (
+              {product.images?.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentImageIndex(idx)}
@@ -105,13 +137,13 @@ const ProductPage = () => {
 
             <div className="flex items-center gap-4 mb-6">
               <span className="text-2xl font-bold">
-                ${product.price.toFixed(2)} USD
+                ${product.price?.toFixed(2)} USD
               </span>
               <span className="text-lg text-gray-400 line-through">
-                ${product.originalPrice.toFixed(2)} USD
+                ${product.original_price?.toFixed(2)} USD
               </span>
               <span className="px-2 py-1 bg-red-100 text-red-600 text-sm font-medium rounded">
-                -{Math.round((1 - product.price / product.originalPrice) * 100)}%
+                -{discount}%
               </span>
             </div>
 
@@ -121,7 +153,7 @@ const ProductPage = () => {
             <div className="mb-6">
               <label className="block text-sm font-medium mb-3">Size</label>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
+                {product.sizes?.map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
@@ -143,7 +175,7 @@ const ProductPage = () => {
                 Color: {selectedColor}
               </label>
               <div className="flex flex-wrap gap-2">
-                {product.colors.map((color) => (
+                {product.colors?.map((color) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
