@@ -15,6 +15,7 @@ import AdminCategories from "./pages/admin/AdminCategories";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminHeroSlides from "./pages/admin/AdminHeroSlides";
+import AdminReviews from "./pages/admin/AdminReviews";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 
 function App() {
