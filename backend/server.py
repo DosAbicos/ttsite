@@ -213,7 +213,7 @@ async def get_order(order_id: str, user_id: Optional[str] = Depends(get_current_
 # Admin Products
 @admin_router.get("/products")
 async def admin_get_products(admin: dict = Depends(get_admin_user)):
-    products = await db.products.find().sort("created_at", -1).to_list(1000)
+    products = await db.products.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
     return products
 
 @admin_router.post("/products")
