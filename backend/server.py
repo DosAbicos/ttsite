@@ -94,7 +94,7 @@ async def get_categories():
 
 @api_router.get("/categories/{slug}")
 async def get_category(slug: str):
-    category = await db.categories.find_one({"slug": slug})
+    category = await db.categories.find_one({"slug": slug}, {"_id": 0})
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     return category
