@@ -68,8 +68,14 @@ const CheckoutSuccessPage = () => {
             </p>
             <div className="space-y-3">
               <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/orders')}
                 className="w-full py-3 bg-black text-white font-medium rounded hover:bg-gray-800 transition-colors"
+              >
+                View My Orders
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                className="w-full py-3 border border-black font-medium rounded hover:bg-gray-50 transition-colors"
               >
                 Continue Shopping
               </button>
