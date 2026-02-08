@@ -109,6 +109,7 @@ const AdminProducts = () => {
         loadData();
       } catch (error) {
         console.error('Failed to delete product:', error);
+        alert('Failed to delete product: ' + (error.response?.data?.detail || error.message));
       }
     }
   };
