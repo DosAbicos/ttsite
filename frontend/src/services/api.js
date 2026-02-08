@@ -97,4 +97,10 @@ export const adminAPI = {
   getStats: () => api.get('/admin/stats'),
 };
 
+// Orders API (for customers)
+export const ordersAPI = {
+  getUserOrders: () => api.get('/orders'),
+  getOrder: (id) => api.get(`/orders/${id}`),
+};
+
 export default api;
