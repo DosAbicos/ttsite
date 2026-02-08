@@ -285,9 +285,20 @@ async def create_review(review_data: ReviewCreate, user_id: str = Depends(get_cu
     await db.reviews.insert_one(review)
     return await db.reviews.find_one({"id": review["id"]}, {"_id": 0})
 
-@api_router.get("/reviews/can-review/{product_id}")
-async def can_review_product(product_id: str, user_id: str = Depends(get_current_user)):
+@api_router.get("/reviews/can-review/{product_identifier}")
+async def can_review_product(product_identifier: str, user_id: str = Depends(get_current_user)):
     """Check if user can review a product (has purchased and hasn't reviewed yet)"""
+    # First try to find product by slug
+    product = await db.products.find_one({"slug": product_identifier}, {"_id": 0, "id": 1})
+    if not product:
+        # Try by id
+        product = await db.products.find_one({"id": product_identifier}, {"_id": 0, "id": 1})
+    
+    if not product:
+        return {"can_review": False, "reason": "product_not_found"}
+    
+    product_id = product["id"]
+    
     # Check if user already reviewed
     existing_review = await db.reviews.find_one({
         "user_id": user_id,
@@ -305,7 +316,7 @@ async def can_review_product(product_id: str, user_id: str = Depends(get_current
     if not orders:
         return {"can_review": False, "reason": "not_purchased"}
     
-    return {"can_review": True, "order_id": orders[0]["id"]}
+    return {"can_review": True, "order_id": orders[0]["id"], "product_id": product_id}
 
 # ============ Admin Routes ============
 
