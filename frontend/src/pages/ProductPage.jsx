@@ -241,6 +241,9 @@ const ProductPage = () => {
 
         {/* Recommended Products */}
         <RecommendedProducts currentProductId={product?.id} />
+        
+        {/* Product Reviews */}
+        <ProductReviews productId={product?.id} />
       </main>
 
       <Footer />
