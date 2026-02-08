@@ -1,7 +1,12 @@
-# ddebuut E-Commerce Clone - PRD
+# Songy E-Commerce - PRD
 
 ## Original Problem Statement
 Create a 100% functional, multi-page clone of the e-commerce website `https://ddebuut.com/` with working forms, authorization, and shopping cart. Additional features include admin panel, Stripe payments, product recommendations, and customer reviews.
+
+## Brand Info
+- **Name:** Songy
+- **Domain:** songy.me
+- **Logo:** Black text "Songy" on white background
 
 ## Tech Stack
 - **Frontend:** React.js with Tailwind CSS
