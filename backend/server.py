@@ -182,8 +182,9 @@ async def create_order(order_data: OrderCreate, user_id: Optional[str] = Depends
     shipping_cost = 0 if subtotal >= 39 else 5.99
     total = subtotal + shipping_cost
     
+    order_id = str(uuid.uuid4())
     order = {
-        "id": str(uuid.uuid4()),
+        "id": order_id,
         "user_id": user_id,
         "email": order_data.email,
         "shipping_address": order_data.shipping_address.dict(),
@@ -192,11 +193,14 @@ async def create_order(order_data: OrderCreate, user_id: Optional[str] = Depends
         "shipping_cost": shipping_cost,
         "total": total,
         "status": "pending",
+        "paid": False,
         "created_at": datetime.utcnow()
     }
     
     await db.orders.insert_one(order)
-    return order
+    
+    # Return order without MongoDB _id
+    return await db.orders.find_one({"id": order_id}, {"_id": 0})
 
 @api_router.get("/orders")
 async def get_user_orders(user_id: str = Depends(get_current_user)):
