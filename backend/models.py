@@ -128,6 +128,26 @@ class Order(BaseModel):
 class OrderStatusUpdate(BaseModel):
     status: str
 
+# ============ Review Models ============
+class ReviewBase(BaseModel):
+    product_id: str
+    rating: int  # 1-5
+    title: str
+    comment: str
+
+class ReviewCreate(ReviewBase):
+    order_id: str  # To verify the user actually purchased
+
+class Review(ReviewBase):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    user_id: str
+    user_name: str
+    verified_purchase: bool = True
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Config:
+        from_attributes = True
+
 # ============ Token Models ============
 class Token(BaseModel):
     access_token: str
