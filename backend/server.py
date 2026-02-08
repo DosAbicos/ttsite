@@ -258,7 +258,7 @@ async def admin_delete_product(product_id: str, admin: dict = Depends(get_admin_
 # Admin Categories
 @admin_router.get("/categories")
 async def admin_get_categories(admin: dict = Depends(get_admin_user)):
-    categories = await db.categories.find().to_list(100)
+    categories = await db.categories.find({}, {"_id": 0}).to_list(100)
     return categories
 
 @admin_router.post("/categories")
