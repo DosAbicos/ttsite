@@ -545,6 +545,52 @@ async def admin_delete_category(category_id: str, admin: dict = Depends(get_admi
         raise HTTPException(status_code=404, detail="Category not found")
     return {"message": "Category deleted"}
 
+# Admin Reviews (Fake Reviews Management)
+@admin_router.get("/reviews")
+async def admin_get_reviews(admin: dict = Depends(get_admin_user)):
+    reviews = await db.reviews.find({}, {"_id": 0}).sort("created_at", -1).to_list(1000)
+    return reviews
+
+@admin_router.post("/reviews")
+async def admin_create_review(review_data: dict, admin: dict = Depends(get_admin_user)):
+    """Create a fake review from admin panel"""
+    review = {
+        "id": str(uuid.uuid4()),
+        "product_id": review_data.get("product_id"),
+        "user_name": review_data.get("user_name"),
+        "rating": review_data.get("rating", 5),
+        "title": review_data.get("title"),
+        "comment": review_data.get("comment"),
+        "verified_purchase": review_data.get("verified_purchase", True),
+        "created_at": datetime.utcnow(),
+        "is_fake": True  # Mark as admin-created
+    }
+    await db.reviews.insert_one(review)
+    return await db.reviews.find_one({"id": review["id"]}, {"_id": 0})
+
+@admin_router.put("/reviews/{review_id}")
+async def admin_update_review(review_id: str, review_data: dict, admin: dict = Depends(get_admin_user)):
+    review = await db.reviews.find_one({"id": review_id})
+    if not review:
+        raise HTTPException(status_code=404, detail="Review not found")
+    
+    update_data = {
+        k: v for k, v in review_data.items() 
+        if k in ["product_id", "user_name", "rating", "title", "comment", "verified_purchase"] and v is not None
+    }
+    
+    if update_data:
+        await db.reviews.update_one({"id": review_id}, {"$set": update_data})
+    
+    return await db.reviews.find_one({"id": review_id}, {"_id": 0})
+
+@admin_router.delete("/reviews/{review_id}")
+async def admin_delete_review(review_id: str, admin: dict = Depends(get_admin_user)):
+    result = await db.reviews.delete_one({"id": review_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Review not found")
+    return {"message": "Review deleted"}
+
 # Admin Orders
 @admin_router.get("/orders")
 async def admin_get_orders(admin: dict = Depends(get_admin_user)):
