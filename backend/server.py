@@ -380,6 +380,166 @@ async def admin_get_stats(admin: dict = Depends(get_admin_user)):
 async def root():
     return {"message": "ddebuut API", "version": "1.0.0"}
 
+# ============ Stripe Payment Routes ============
+
+class CreateCheckoutRequest(BaseModel):
+    order_id: str
+    origin_url: str
+
+class CheckoutStatusRequest(BaseModel):
+    session_id: str
+
+@api_router.post("/checkout/create")
+async def create_checkout_session(
+    checkout_data: CreateCheckoutRequest, 
+    request: Request,
+    user_id: Optional[str] = Depends(get_current_user_optional)
+):
+    """Create Stripe checkout session for an order"""
+    import uuid
+    
+    # Get the order
+    order = await db.orders.find_one({"id": checkout_data.order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Get Stripe API key
+    stripe_api_key = os.environ.get("STRIPE_API_KEY")
+    if not stripe_api_key:
+        raise HTTPException(status_code=500, detail="Stripe not configured")
+    
+    # Initialize Stripe
+    host_url = str(request.base_url).rstrip('/')
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+    
+    # Build URLs from frontend origin
+    origin_url = checkout_data.origin_url.rstrip('/')
+    success_url = f"{origin_url}/checkout/success?session_id={{CHECKOUT_SESSION_ID}}"
+    cancel_url = f"{origin_url}/checkout"
+    
+    # Create checkout session with order total
+    amount = float(order["total"])
+    
+    checkout_request = CheckoutSessionRequest(
+        amount=amount,
+        currency="usd",
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata={
+            "order_id": checkout_data.order_id,
+            "user_id": user_id or "guest",
+            "email": order.get("email", "")
+        }
+    )
+    
+    try:
+        session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Save payment transaction
+        transaction = {
+            "id": str(uuid.uuid4()),
+            "session_id": session.session_id,
+            "order_id": checkout_data.order_id,
+            "user_id": user_id,
+            "email": order.get("email"),
+            "amount": amount,
+            "currency": "usd",
+            "payment_status": "pending",
+            "created_at": datetime.utcnow()
+        }
+        await db.payment_transactions.insert_one(transaction)
+        
+        return {
+            "checkout_url": session.url,
+            "session_id": session.session_id
+        }
+    except Exception as e:
+        logger.error(f"Stripe checkout error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Payment error: {str(e)}")
+
+@api_router.get("/checkout/status/{session_id}")
+async def get_checkout_status(session_id: str, request: Request):
+    """Get payment status for a checkout session"""
+    stripe_api_key = os.environ.get("STRIPE_API_KEY")
+    if not stripe_api_key:
+        raise HTTPException(status_code=500, detail="Stripe not configured")
+    
+    host_url = str(request.base_url).rstrip('/')
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+    
+    try:
+        status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Update transaction and order status
+        transaction = await db.payment_transactions.find_one({"session_id": session_id})
+        if transaction:
+            new_status = "paid" if status.payment_status == "paid" else status.payment_status
+            
+            # Update transaction
+            await db.payment_transactions.update_one(
+                {"session_id": session_id},
+                {"$set": {
+                    "payment_status": new_status,
+                    "updated_at": datetime.utcnow()
+                }}
+            )
+            
+            # Update order status if paid
+            if status.payment_status == "paid":
+                await db.orders.update_one(
+                    {"id": transaction["order_id"]},
+                    {"$set": {"status": "processing", "paid": True}}
+                )
+        
+        return {
+            "status": status.status,
+            "payment_status": status.payment_status,
+            "amount_total": status.amount_total,
+            "currency": status.currency
+        }
+    except Exception as e:
+        logger.error(f"Stripe status error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Status check error: {str(e)}")
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhook events"""
+    stripe_api_key = os.environ.get("STRIPE_API_KEY")
+    if not stripe_api_key:
+        return {"status": "error", "message": "Stripe not configured"}
+    
+    host_url = str(request.base_url).rstrip('/')
+    webhook_url = f"{host_url}/api/webhook/stripe"
+    stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+    
+    try:
+        body = await request.body()
+        signature = request.headers.get("Stripe-Signature")
+        
+        webhook_response = await stripe_checkout.handle_webhook(body, signature)
+        
+        logger.info(f"Stripe webhook: {webhook_response.event_type} - {webhook_response.session_id}")
+        
+        # Update payment status based on webhook
+        if webhook_response.payment_status == "paid":
+            transaction = await db.payment_transactions.find_one({"session_id": webhook_response.session_id})
+            if transaction:
+                await db.payment_transactions.update_one(
+                    {"session_id": webhook_response.session_id},
+                    {"$set": {"payment_status": "paid", "updated_at": datetime.utcnow()}}
+                )
+                await db.orders.update_one(
+                    {"id": transaction["order_id"]},
+                    {"$set": {"status": "processing", "paid": True}}
+                )
+        
+        return {"status": "success"}
+    except Exception as e:
+        logger.error(f"Webhook error: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
 # Include routers
 app.include_router(api_router)
 app.include_router(admin_router)
