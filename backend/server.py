@@ -16,7 +16,8 @@ from models import (
     Category, CategoryCreate, CategoryUpdate,
     Product, ProductCreate, ProductUpdate,
     Order, OrderCreate, OrderStatusUpdate,
-    ReviewCreate
+    ReviewCreate,
+    HeroSlideCreate, HeroSlideUpdate
 )
 from auth import (
     get_password_hash, verify_password, create_access_token,
