@@ -27,6 +27,7 @@ function App() {
               <Route path="/collections/:slug" element={<CollectionPage />} />
               <Route path="/product/:slug" element={<ProductPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
               
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />} />
