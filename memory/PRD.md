@@ -34,6 +34,11 @@ Create a 100% functional, multi-page clone of the e-commerce website `https://dd
 - [x] Image upload for products (file upload + URL support) - Added 2026-02-08
 - [x] Hero Slides management (homepage carousel) - Added 2026-02-08
 
+### Customer Features (Added 2026-02-08)
+- [x] Order history page (/orders)
+- [x] "My Orders" link in user menu
+- [x] "View My Orders" button on checkout success
+
 ### Payments (Completed)
 - [x] Stripe integration
 - [x] Checkout session creation
