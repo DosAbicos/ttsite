@@ -160,7 +160,7 @@ async def get_products(
 
 @api_router.get("/products/{slug}")
 async def get_product(slug: str):
-    product = await db.products.find_one({"slug": slug})
+    product = await db.products.find_one({"slug": slug}, {"_id": 0})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
