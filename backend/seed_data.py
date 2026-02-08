@@ -2,6 +2,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from models import Category, Product
 import asyncio
+from datetime import datetime
 
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 db_name = os.environ.get('DB_NAME', 'ddebuut')
