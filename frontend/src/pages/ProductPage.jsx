@@ -5,6 +5,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import AuthModal from '../components/auth/AuthModal';
 import RecommendedProducts from '../components/product/RecommendedProducts';
+import ProductReviews from '../components/product/ProductReviews';
 import { productsAPI } from '../services/api';
 import { useCart } from '../context/CartContext';
 
