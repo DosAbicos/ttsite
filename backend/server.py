@@ -220,6 +220,83 @@ async def get_order(order_id: str, user_id: Optional[str] = Depends(get_current_
     
     return order
 
+# ============ Review Routes ============
+@api_router.get("/products/{product_id}/reviews")
+async def get_product_reviews(product_id: str):
+    """Get all reviews for a product"""
+    reviews = await db.reviews.find({"product_id": product_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return reviews
+
+@api_router.post("/reviews")
+async def create_review(review_data: ReviewCreate, user_id: str = Depends(get_current_user)):
+    """Create a review for a product (must have purchased it)"""
+    import uuid
+    
+    # Get user info
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Verify the user has ordered this product
+    order = await db.orders.find_one({"id": review_data.order_id, "user_id": user_id})
+    if not order:
+        raise HTTPException(status_code=403, detail="Order not found or you don't have access")
+    
+    # Check if product is in the order
+    product_in_order = any(item.get("product_id") == review_data.product_id for item in order.get("items", []))
+    if not product_in_order:
+        raise HTTPException(status_code=403, detail="This product was not in your order")
+    
+    # Check if user already reviewed this product
+    existing_review = await db.reviews.find_one({
+        "user_id": user_id,
+        "product_id": review_data.product_id
+    })
+    if existing_review:
+        raise HTTPException(status_code=400, detail="You have already reviewed this product")
+    
+    # Validate rating
+    if review_data.rating < 1 or review_data.rating > 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5")
+    
+    review = {
+        "id": str(uuid.uuid4()),
+        "product_id": review_data.product_id,
+        "order_id": review_data.order_id,
+        "user_id": user_id,
+        "user_name": user.get("name", "Anonymous"),
+        "rating": review_data.rating,
+        "title": review_data.title,
+        "comment": review_data.comment,
+        "verified_purchase": True,
+        "created_at": datetime.utcnow()
+    }
+    
+    await db.reviews.insert_one(review)
+    return await db.reviews.find_one({"id": review["id"]}, {"_id": 0})
+
+@api_router.get("/reviews/can-review/{product_id}")
+async def can_review_product(product_id: str, user_id: str = Depends(get_current_user)):
+    """Check if user can review a product (has purchased and hasn't reviewed yet)"""
+    # Check if user already reviewed
+    existing_review = await db.reviews.find_one({
+        "user_id": user_id,
+        "product_id": product_id
+    })
+    if existing_review:
+        return {"can_review": False, "reason": "already_reviewed"}
+    
+    # Find orders with this product
+    orders = await db.orders.find({
+        "user_id": user_id,
+        "items.product_id": product_id
+    }, {"_id": 0, "id": 1}).to_list(100)
+    
+    if not orders:
+        return {"can_review": False, "reason": "not_purchased"}
+    
+    return {"can_review": True, "order_id": orders[0]["id"]}
+
 # ============ Admin Routes ============
 
 # Admin Products
