@@ -51,7 +51,7 @@ export const checkoutAPI = {
 
 // Reviews API
 export const reviewsAPI = {
-  getProductReviews: (productId) => api.get(`/products/${productId}/reviews`),
+  getProductReviews: (productId) => api.get(`/reviews/product/${productId}`),
   createReview: (reviewData) => api.post('/reviews', reviewData),
   canReview: (productId) => api.get(`/reviews/can-review/${productId}`),
 };
