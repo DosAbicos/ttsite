@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { productsAPI } from '../../services/api';
 
 const RecommendedProducts = ({ currentProductId }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     loadRecommendations();
@@ -12,11 +14,10 @@ const RecommendedProducts = ({ currentProductId }) => {
 
   const loadRecommendations = async () => {
     try {
-      const response = await productsAPI.getAll({ limit: 5 });
-      // Filter out current product and take 4
+      const response = await productsAPI.getAll({ limit: 10 });
+      // Filter out current product
       const filtered = (response.data.products || [])
-        .filter(p => p.id !== currentProductId)
-        .slice(0, 4);
+        .filter(p => p.id !== currentProductId);
       setProducts(filtered);
     } catch (error) {
       console.error('Failed to load recommendations:', error);
@@ -26,15 +27,45 @@ const RecommendedProducts = ({ currentProductId }) => {
     }
   };
 
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const scrollAmount = 300;
+      scrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   if (loading || products.length === 0) {
     return null;
   }
 
   return (
     <section className="mt-16 px-6">
-      <h2 className="text-2xl font-serif mb-8">You May Also Like</h2>
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-2xl font-serif">You May Also Like</h2>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => scroll('left')}
+            className="p-2 border border-gray-200 rounded-full hover:border-black transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button 
+            onClick={() => scroll('right')}
+            className="p-2 border border-gray-200 rounded-full hover:border-black transition-colors"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div 
+        ref={scrollRef}
+        className="flex overflow-x-auto scrollbar-hide gap-6 pb-4"
+        style={{ scrollBehavior: 'smooth' }}
+      >
         {products.map((product) => {
           const discount = Math.round((1 - product.price / product.original_price) * 100);
           const isOnSale = discount > 0;
@@ -43,7 +74,7 @@ const RecommendedProducts = ({ currentProductId }) => {
             <Link
               key={product.id}
               to={`/product/${product.slug}`}
-              className="group"
+              className="flex-shrink-0 w-64 group"
             >
               <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden mb-3">
                 <img
