@@ -237,8 +237,12 @@ const ProductPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Recommended Products */}
+        <RecommendedProducts currentProductId={product?.id} />
       </main>
 
+      <Footer />
       <AuthModal />
     </div>
   );
