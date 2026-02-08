@@ -1,21 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search as SearchIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { products } from '../../data/mock';
+import { productsAPI } from '../../services/api';
 
 const SearchModal = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (query.trim()) {
-      const filtered = products.filter(p => 
-        p.name.toLowerCase().includes(query.toLowerCase())
-      );
-      setResults(filtered);
-    } else {
-      setResults([]);
-    }
+    const searchProducts = async () => {
+      if (query.trim().length < 2) {
+        setResults([]);
+        return;
+      }
+      
+      setLoading(true);
+      try {
+        const response = await productsAPI.getAll({ search: query, limit: 12 });
+        setResults(response.data.products || []);
+      } catch (error) {
+        console.error('Search failed:', error);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const debounce = setTimeout(searchProducts, 300);
+    return () => clearTimeout(debounce);
   }, [query]);
 
   useEffect(() => {
@@ -53,7 +66,11 @@ const SearchModal = ({ isOpen, onClose }) => {
           />
         </div>
 
-        {results.length > 0 && (
+        {loading && (
+          <div className="text-center py-8 text-gray-500">Searching...</div>
+        )}
+
+        {!loading && results.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {results.map(product => (
               <Link 
@@ -64,22 +81,22 @@ const SearchModal = ({ isOpen, onClose }) => {
               >
                 <div className="aspect-[4/5] bg-gray-100 mb-3 overflow-hidden">
                   <img 
-                    src={product.images[0]} 
+                    src={product.images?.[0]} 
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <h3 className="text-sm font-medium mb-1">{product.name}</h3>
                 <p className="text-sm">
-                  <span className="text-black">${product.price.toFixed(2)} USD</span>
-                  <span className="text-gray-400 line-through ml-2">${product.originalPrice.toFixed(2)} USD</span>
+                  <span className="text-black">${product.price?.toFixed(2)} USD</span>
+                  <span className="text-gray-400 line-through ml-2">${product.original_price?.toFixed(2)} USD</span>
                 </p>
               </Link>
             ))}
           </div>
         )}
 
-        {query && results.length === 0 && (
+        {!loading && query.length >= 2 && results.length === 0 && (
           <p className="text-center text-gray-500">No products found for "{query}"</p>
         )}
       </div>
