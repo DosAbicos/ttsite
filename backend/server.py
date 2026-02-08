@@ -153,7 +153,7 @@ async def get_products(
         sort_field = "name"
         sort_order = -1
     
-    products = await db.products.find(query).sort(sort_field, sort_order).skip(skip).limit(limit).to_list(limit)
+    products = await db.products.find(query, {"_id": 0}).sort(sort_field, sort_order).skip(skip).limit(limit).to_list(limit)
     total = await db.products.count_documents(query)
     
     return {"products": products, "total": total}
