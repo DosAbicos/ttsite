@@ -15,6 +15,7 @@ import AdminCategories from "./pages/admin/AdminCategories";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminHeroSlides from "./pages/admin/AdminHeroSlides";
+import OrderHistoryPage from "./pages/OrderHistoryPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route path="/product/:slug" element={<ProductPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+              <Route path="/orders" element={<OrderHistoryPage />} />
               
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />} />
