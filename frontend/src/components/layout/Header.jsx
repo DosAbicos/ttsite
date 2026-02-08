@@ -9,10 +9,12 @@ import SearchModal from '../search/SearchModal';
 
 const Header = () => {
   const { cartCount, setIsCartOpen } = useCart();
-  const { user, openAuthModal } = useAuth();
+  const { user, openAuthModal, logout } = useAuth();
+  const navigate = useNavigate();
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState('English');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const handleLangSelect = (lang) => {
     setCurrentLang(lang.name);
