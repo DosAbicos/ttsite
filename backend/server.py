@@ -115,7 +115,7 @@ async def get_products(
     
     # Category filter
     if category:
-        cat = await db.categories.find_one({"slug": category})
+        cat = await db.categories.find_one({"slug": category}, {"_id": 0})
         if cat:
             query["category_id"] = cat["id"]
     
