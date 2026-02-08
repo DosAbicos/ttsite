@@ -46,7 +46,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-gray-400">
-            © 2025 ddebuut. All rights reserved.
+            © 2025 Songy. All rights reserved.
           </p>
           <div className="flex items-center gap-2">
             {/* Visa */}
