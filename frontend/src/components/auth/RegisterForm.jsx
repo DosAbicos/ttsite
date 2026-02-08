@@ -18,17 +18,23 @@ const RegisterForm = () => {
     try {
       if (!name || !email || !password || !confirmPassword) {
         setError('Please fill in all fields');
+        setLoading(false);
         return;
       }
       if (password !== confirmPassword) {
         setError('Passwords do not match');
+        setLoading(false);
         return;
       }
       if (password.length < 6) {
         setError('Password must be at least 6 characters');
+        setLoading(false);
         return;
       }
-      await register(email, password, name);
+      const result = await register(email, password, name);
+      if (!result.success) {
+        setError(result.error);
+      }
     } catch (err) {
       setError('Registration failed');
     } finally {
