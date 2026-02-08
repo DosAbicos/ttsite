@@ -9,7 +9,8 @@ import {
   LogOut,
   Menu,
   X,
-  Image
+  Image,
+  MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -29,6 +30,7 @@ const AdminLayout = ({ children, activeTab }) => {
     { id: 'hero-slides', label: 'Hero Slides', icon: Image, path: '/admin/hero-slides' },
     { id: 'products', label: 'Products', icon: Package, path: '/admin/products' },
     { id: 'categories', label: 'Categories', icon: FolderTree, path: '/admin/categories' },
+    { id: 'reviews', label: 'Reviews', icon: MessageSquare, path: '/admin/reviews' },
     { id: 'orders', label: 'Orders', icon: ShoppingCart, path: '/admin/orders' },
     { id: 'users', label: 'Users', icon: Users, path: '/admin/users' },
   ];
