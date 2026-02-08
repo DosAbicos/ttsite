@@ -203,10 +203,41 @@ async def get_product(slug: str):
 async def create_order(order_data: OrderCreate, user_id: Optional[str] = Depends(get_current_user_optional)):
     import uuid
     
-    # Calculate totals
-    subtotal = sum(item.price * item.quantity for item in order_data.items)
-    shipping_cost = 0 if subtotal >= 39 else 5.99
-    total = subtotal + shipping_cost
+    # Validate and get fresh prices from database
+    validated_items = []
+    subtotal = 0
+    total_shipping = 0
+    
+    for item in order_data.items:
+        # Get current product price from database
+        product = await db.products.find_one({"id": item.product_id}, {"_id": 0})
+        if not product:
+            raise HTTPException(status_code=400, detail=f"Product {item.product_id} not found")
+        
+        # Use current price from database (not from client)
+        current_price = product.get("price", item.price)
+        product_shipping = product.get("shipping_cost", 0) * item.quantity
+        
+        validated_items.append({
+            "product_id": item.product_id,
+            "name": item.name,
+            "price": current_price,  # Use database price
+            "quantity": item.quantity,
+            "size": item.size,
+            "color": item.color,
+            "image": item.image
+        })
+        
+        subtotal += current_price * item.quantity
+        total_shipping += product_shipping
+    
+    # Calculate shipping: free if subtotal >= 39, otherwise use product shipping costs or $5.99 minimum
+    if subtotal >= 39:
+        shipping_cost = 0
+    else:
+        shipping_cost = total_shipping if total_shipping > 0 else 5.99
+    
+    total = round(subtotal + shipping_cost, 2)
     
     order_id = str(uuid.uuid4())
     order = {
@@ -214,9 +245,9 @@ async def create_order(order_data: OrderCreate, user_id: Optional[str] = Depends
         "user_id": user_id,
         "email": order_data.email,
         "shipping_address": order_data.shipping_address.dict(),
-        "items": [item.dict() for item in order_data.items],
-        "subtotal": subtotal,
-        "shipping_cost": shipping_cost,
+        "items": validated_items,
+        "subtotal": round(subtotal, 2),
+        "shipping_cost": round(shipping_cost, 2),
         "total": total,
         "status": "pending",
         "paid": False,
