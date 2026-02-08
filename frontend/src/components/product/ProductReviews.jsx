@@ -3,12 +3,13 @@ import { Star, CheckCircle } from 'lucide-react';
 import { reviewsAPI } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
-const ProductReviews = ({ productId }) => {
+const ProductReviews = ({ productSlug }) => {
   const { user, openAuthModal } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [canReview, setCanReview] = useState(false);
   const [orderId, setOrderId] = useState(null);
+  const [productId, setProductId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     rating: 5,
@@ -19,15 +20,17 @@ const ProductReviews = ({ productId }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    loadReviews();
-    if (user) {
-      checkCanReview();
+    if (productSlug) {
+      loadReviews();
+      if (user) {
+        checkCanReview();
+      }
     }
-  }, [productId, user]);
+  }, [productSlug, user]);
 
   const loadReviews = async () => {
     try {
-      const response = await reviewsAPI.getProductReviews(productId);
+      const response = await reviewsAPI.getProductReviews(productSlug);
       setReviews(response.data || []);
     } catch (error) {
       console.error('Failed to load reviews:', error);
@@ -38,10 +41,13 @@ const ProductReviews = ({ productId }) => {
 
   const checkCanReview = async () => {
     try {
-      const response = await reviewsAPI.canReview(productId);
+      const response = await reviewsAPI.canReview(productSlug);
       setCanReview(response.data.can_review);
       if (response.data.order_id) {
         setOrderId(response.data.order_id);
+      }
+      if (response.data.product_id) {
+        setProductId(response.data.product_id);
       }
     } catch (error) {
       setCanReview(false);
