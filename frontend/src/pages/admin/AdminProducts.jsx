@@ -16,6 +16,7 @@ const AdminProducts = () => {
     slug: '',
     price: '',
     original_price: '',
+    shipping_cost: '0',
     description: '',
     images: [''],
     category_id: '',
