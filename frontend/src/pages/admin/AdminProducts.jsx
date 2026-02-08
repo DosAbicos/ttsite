@@ -137,6 +137,37 @@ const AdminProducts = () => {
     }));
   };
 
+  const handleFileUpload = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    try {
+      const uploadPromises = Array.from(files).map(file => adminAPI.uploadImage(file));
+      const responses = await Promise.all(uploadPromises);
+      
+      const newUrls = responses.map(res => res.data.url);
+      
+      setFormData(prev => {
+        // Filter out empty strings and add new URLs
+        const existingImages = prev.images.filter(img => img.trim());
+        return {
+          ...prev,
+          images: [...existingImages, ...newUrls, '']
+        };
+      });
+    } catch (error) {
+      console.error('Upload failed:', error);
+      alert(error.response?.data?.detail || 'Failed to upload image');
+    } finally {
+      setUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   if (loading) {
     return (
       <AdminLayout activeTab="products">
