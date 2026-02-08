@@ -193,12 +193,12 @@ async def create_order(order_data: OrderCreate, user_id: Optional[str] = Depends
 
 @api_router.get("/orders")
 async def get_user_orders(user_id: str = Depends(get_current_user)):
-    orders = await db.orders.find({"user_id": user_id}).sort("created_at", -1).to_list(100)
+    orders = await db.orders.find({"user_id": user_id}, {"_id": 0}).sort("created_at", -1).to_list(100)
     return orders
 
 @api_router.get("/orders/{order_id}")
 async def get_order(order_id: str, user_id: Optional[str] = Depends(get_current_user_optional)):
-    order = await db.orders.find_one({"id": order_id})
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     
