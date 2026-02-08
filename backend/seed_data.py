@@ -261,6 +261,61 @@ initial_products = [
     }
 ]
 
+# Initial reviews data (fake reviews for demonstration)
+initial_reviews = [
+    # Reviews for prod-1 (BLOSSOM WORKWEAR JACKET)
+    {"id": "rev-1", "product_id": "prod-1", "user_name": "Maria K.", "rating": 5, "title": "Absolutely stunning!", "comment": "This jacket exceeded my expectations. The quality is amazing and the blossom embroidery is so detailed.", "verified_purchase": True},
+    {"id": "rev-2", "product_id": "prod-1", "user_name": "Alex T.", "rating": 4, "title": "Great quality", "comment": "Beautiful jacket, fits perfectly. Only giving 4 stars because shipping took a bit longer than expected.", "verified_purchase": True},
+    {"id": "rev-3", "product_id": "prod-1", "user_name": "Sophie L.", "rating": 5, "title": "Worth every penny", "comment": "I get compliments every time I wear this. The cream color is gorgeous!", "verified_purchase": True},
+    
+    # Reviews for prod-2 (Blossom Black Denim)
+    {"id": "rev-4", "product_id": "prod-2", "user_name": "James W.", "rating": 5, "title": "Perfect fit!", "comment": "These jeans fit like a glove. The black is deep and rich, very stylish.", "verified_purchase": True},
+    {"id": "rev-5", "product_id": "prod-2", "user_name": "Emma R.", "rating": 4, "title": "Nice denim", "comment": "Good quality denim, comfortable to wear all day. The blossom pattern is subtle but nice.", "verified_purchase": True},
+    
+    # Reviews for prod-3 (Blossom Denim)
+    {"id": "rev-6", "product_id": "prod-3", "user_name": "David M.", "rating": 5, "title": "Amazing design", "comment": "The light blue color is perfect for summer. The embroidery details are beautiful.", "verified_purchase": True},
+    {"id": "rev-7", "product_id": "prod-3", "user_name": "Linda P.", "rating": 5, "title": "Love it!", "comment": "Second pair I bought because I loved the first one so much!", "verified_purchase": True},
+    {"id": "rev-8", "product_id": "prod-3", "user_name": "Michael S.", "rating": 4, "title": "Good quality", "comment": "Nice jeans, true to size. Would recommend.", "verified_purchase": True},
+    
+    # Reviews for prod-4 (Fallen Knight Denim)
+    {"id": "rev-9", "product_id": "prod-4", "user_name": "Chris B.", "rating": 5, "title": "Unique design!", "comment": "Never seen anything like this. The fallen knight design is so unique and edgy.", "verified_purchase": True},
+    {"id": "rev-10", "product_id": "prod-4", "user_name": "Anna K.", "rating": 4, "title": "Very cool", "comment": "Great jeans with an artistic touch. Comfortable too!", "verified_purchase": True},
+    
+    # Reviews for prod-5 (LAST SUPPER JACKET)
+    {"id": "rev-11", "product_id": "prod-5", "user_name": "Robert H.", "rating": 5, "title": "Masterpiece!", "comment": "This jacket is a work of art. The print quality is exceptional.", "verified_purchase": True},
+    {"id": "rev-12", "product_id": "prod-5", "user_name": "Jessica N.", "rating": 5, "title": "Conversation starter", "comment": "Everyone asks me where I got this jacket. Absolutely love it!", "verified_purchase": True},
+    {"id": "rev-13", "product_id": "prod-5", "user_name": "Thomas G.", "rating": 4, "title": "Great jacket", "comment": "Beautiful design, good quality material. Runs slightly large.", "verified_purchase": True},
+    
+    # Reviews for prod-6 (HEAVENS ECLIPSE DENIM)
+    {"id": "rev-14", "product_id": "prod-6", "user_name": "Sarah J.", "rating": 5, "title": "Heavenly!", "comment": "The eclipse design is breathtaking. Perfect fit and super comfortable.", "verified_purchase": True},
+    {"id": "rev-15", "product_id": "prod-6", "user_name": "Daniel C.", "rating": 4, "title": "Nice jeans", "comment": "Good quality denim with a unique design. Happy with my purchase.", "verified_purchase": True},
+    
+    # Reviews for prod-7 (Fast Draw Black Denim)
+    {"id": "rev-16", "product_id": "prod-7", "user_name": "Kevin L.", "rating": 5, "title": "Sleek and stylish", "comment": "These black jeans are perfect for any occasion. Love the subtle design.", "verified_purchase": True},
+    {"id": "rev-17", "product_id": "prod-7", "user_name": "Michelle T.", "rating": 5, "title": "Best purchase!", "comment": "Fits perfectly, looks amazing. Will definitely buy more!", "verified_purchase": True},
+    
+    # Reviews for prod-8 (Fast Draw Denim)
+    {"id": "rev-18", "product_id": "prod-8", "user_name": "Brian F.", "rating": 4, "title": "Good jeans", "comment": "Nice blue color, comfortable fit. The fast draw design is cool.", "verified_purchase": True},
+    {"id": "rev-19", "product_id": "prod-8", "user_name": "Laura W.", "rating": 5, "title": "Love the design", "comment": "Unique design that stands out. Great quality too!", "verified_purchase": True},
+    
+    # Reviews for prod-9 (Souk Jacket)
+    {"id": "rev-20", "product_id": "prod-9", "user_name": "Paul D.", "rating": 5, "title": "Premium quality", "comment": "The patterns on this jacket are incredible. Premium feel and look.", "verified_purchase": True},
+    {"id": "rev-21", "product_id": "prod-9", "user_name": "Nicole M.", "rating": 4, "title": "Beautiful jacket", "comment": "Love the brown color and unique patterns. Slightly heavy but worth it.", "verified_purchase": True},
+    
+    # Reviews for prod-10 (BONNIE & CLYDE JACKET)
+    {"id": "rev-22", "product_id": "prod-10", "user_name": "Steve R.", "rating": 5, "title": "Vintage vibes!", "comment": "This jacket gives off such cool vintage vibes. Love the Bonnie & Clyde theme!", "verified_purchase": True},
+    {"id": "rev-23", "product_id": "prod-10", "user_name": "Amy H.", "rating": 5, "title": "Stunning!", "comment": "The cream color is beautiful and the design is so unique. Gets compliments everywhere.", "verified_purchase": True},
+    
+    # Reviews for prod-11 (HERCULES JACKET)
+    {"id": "rev-24", "product_id": "prod-11", "user_name": "George K.", "rating": 5, "title": "Powerful look", "comment": "Feel like a hero wearing this jacket. The renaissance design is amazing!", "verified_purchase": True},
+    {"id": "rev-25", "product_id": "prod-11", "user_name": "Rachel E.", "rating": 4, "title": "Great design", "comment": "Love the Hercules theme. Quality is good, colors are vibrant.", "verified_purchase": True},
+    
+    # Reviews for prod-12 (Velvet Shell Jacket)
+    {"id": "rev-26", "product_id": "prod-12", "user_name": "Mark V.", "rating": 5, "title": "Luxurious feel", "comment": "The velvet is so soft and the purple color is rich. Premium quality!", "verified_purchase": True},
+    {"id": "rev-27", "product_id": "prod-12", "user_name": "Diana S.", "rating": 5, "title": "Absolutely love it!", "comment": "This jacket is gorgeous! The design is unique and the quality is top-notch.", "verified_purchase": True},
+    {"id": "rev-28", "product_id": "prod-12", "user_name": "Jason P.", "rating": 4, "title": "Very nice", "comment": "Beautiful jacket, stands out from the crowd. Comfortable to wear.", "verified_purchase": True},
+]
+
 async def seed_database():
     """Seed database with initial data if empty"""
     client = AsyncIOMotorClient(mongo_url)

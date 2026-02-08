@@ -239,11 +239,11 @@ const ProductPage = () => {
           </div>
         </div>
 
+        {/* Customer Reviews - above recommendations */}
+        <ProductReviews productSlug={slug} />
+        
         {/* Recommended Products */}
         <RecommendedProducts currentProductId={product?.id} />
-        
-        {/* Product Reviews */}
-        <ProductReviews productId={product?.id} />
       </main>
 
       <Footer />
