@@ -362,8 +362,11 @@ async def upload_image(
     with open(file_path, "wb") as f:
         f.write(contents)
     
-    # Generate URL
+    # Generate URL - use HTTPS for production
     base_url = str(request.base_url).rstrip('/')
+    # Force HTTPS in production
+    if base_url.startswith('http://') and 'localhost' not in base_url and '127.0.0.1' not in base_url:
+        base_url = base_url.replace('http://', 'https://')
     image_url = f"{base_url}/uploads/{unique_filename}"
     
     return {"url": image_url, "filename": unique_filename}
