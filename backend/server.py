@@ -110,6 +110,20 @@ async def get_categories():
     categories = await db.categories.find({}, {"_id": 0}).to_list(100)
     return categories
 
+# ============ Hero Slides Routes ============
+@api_router.get("/hero-slides")
+async def get_hero_slides():
+    """Get hero slides for homepage carousel"""
+    slides = await db.hero_slides.find({}, {"_id": 0}).sort("order", 1).to_list(20)
+    if not slides:
+        # Return default slides if none in DB
+        return [
+            {"id": "slide-1", "image": "https://img-va.myshopline.com/image/store/1747638107971/5-11-0.jpg?w=1440&h=1800", "link": "/collections/minecraft", "order": 1},
+            {"id": "slide-2", "image": "https://img-va.myshopline.com/image/store/1747638107971/691FE659-7FF0-46BE-A41E-AF0A25223FA7-0.jpg?w=1170&h=1160", "link": "/collections/ykarchive-club", "order": 2},
+            {"id": "slide-3", "image": "https://img-va.myshopline.com/image/store/1747638107971/CBE13275-D619-4316-9973-01D84AFDC537-0.jpg?w=900&h=1350", "link": "/collections/holy-headen", "order": 3}
+        ]
+    return slides
+
 @api_router.get("/categories/{slug}")
 async def get_category(slug: str):
     category = await db.categories.find_one({"slug": slug}, {"_id": 0})
