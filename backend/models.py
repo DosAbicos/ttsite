@@ -56,6 +56,7 @@ class ProductBase(BaseModel):
     slug: str
     price: float
     original_price: float
+    shipping_cost: float = 0.0  # Shipping cost per item
     currency: str = "USD"
     description: str
     images: List[str]
@@ -72,6 +73,7 @@ class ProductUpdate(BaseModel):
     slug: Optional[str] = None
     price: Optional[float] = None
     original_price: Optional[float] = None
+    shipping_cost: Optional[float] = None
     description: Optional[str] = None
     images: Optional[List[str]] = None
     category_id: Optional[str] = None
