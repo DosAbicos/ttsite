@@ -291,7 +291,7 @@ const AdminProducts = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">Price ($)</label>
                   <input
@@ -313,6 +313,19 @@ const AdminProducts = () => {
                     required
                     className="w-full px-3 py-2 border rounded focus:outline-none focus:border-black"
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Shipping ($)</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.shipping_cost}
+                    onChange={(e) => setFormData(prev => ({ ...prev, shipping_cost: e.target.value }))}
+                    className="w-full px-3 py-2 border rounded focus:outline-none focus:border-black"
+                    placeholder="0.00"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Free if order ≥ $39</p>
                 </div>
               </div>
 
