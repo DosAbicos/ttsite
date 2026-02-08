@@ -72,6 +72,7 @@ const AdminCategories = () => {
         loadCategories();
       } catch (error) {
         console.error('Failed to delete category:', error);
+        alert('Failed to delete category: ' + (error.response?.data?.detail || error.message));
       }
     }
   };
