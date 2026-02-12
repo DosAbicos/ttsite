@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X, Save, Star } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Save, Star, Upload, Image } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { adminAPI } from '../../services/api';
 
@@ -9,12 +9,14 @@ const AdminReviews = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingReview, setEditingReview] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     product_id: '',
     user_name: '',
     rating: 5,
     title: '',
     comment: '',
+    images: [],
     verified_purchase: true
   });
 
