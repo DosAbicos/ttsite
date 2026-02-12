@@ -520,6 +520,79 @@ async def admin_delete_hero_slide(slide_id: str, admin: dict = Depends(get_admin
         raise HTTPException(status_code=404, detail="Slide not found")
     return {"message": "Slide deleted"}
 
+# Admin Marquee
+@admin_router.get("/marquee")
+async def admin_get_marquee(admin: dict = Depends(get_admin_user)):
+    marquee = await db.settings.find_one({"key": "marquee_texts"}, {"_id": 0})
+    if marquee and marquee.get("texts"):
+        return marquee["texts"]
+    return [
+        {"id": "1", "text": "FREE SHIPPING OVER $39 (LIMITED TIME)"},
+        {"id": "2", "text": "45-DAY FREE RETURNS AND EXCHANGES"}
+    ]
+
+@admin_router.put("/marquee")
+async def admin_update_marquee(data: dict, admin: dict = Depends(get_admin_user)):
+    texts = data.get("texts", [])
+    await db.settings.update_one(
+        {"key": "marquee_texts"},
+        {"$set": {"key": "marquee_texts", "texts": texts}},
+        upsert=True
+    )
+    return {"message": "Marquee updated"}
+
+# Admin Promo Codes
+@admin_router.get("/promos")
+async def admin_get_promos(admin: dict = Depends(get_admin_user)):
+    promos = await db.promos.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return promos
+
+@admin_router.post("/promos")
+async def admin_create_promo(promo_data: dict, admin: dict = Depends(get_admin_user)):
+    # Check if code already exists
+    existing = await db.promos.find_one({"code": promo_data.get("code", "").upper()})
+    if existing:
+        raise HTTPException(status_code=400, detail="Promo code already exists")
+    
+    promo = {
+        "id": str(uuid.uuid4()),
+        "code": promo_data.get("code", "").upper(),
+        "discount": promo_data.get("discount", 10),
+        "description": promo_data.get("description", ""),
+        "is_active": promo_data.get("is_active", True),
+        "created_at": datetime.utcnow()
+    }
+    await db.promos.insert_one(promo)
+    return await db.promos.find_one({"id": promo["id"]}, {"_id": 0})
+
+@admin_router.put("/promos/{promo_id}")
+async def admin_update_promo(promo_id: str, promo_data: dict, admin: dict = Depends(get_admin_user)):
+    promo = await db.promos.find_one({"id": promo_id})
+    if not promo:
+        raise HTTPException(status_code=404, detail="Promo not found")
+    
+    update_data = {}
+    if "code" in promo_data:
+        update_data["code"] = promo_data["code"].upper()
+    if "discount" in promo_data:
+        update_data["discount"] = promo_data["discount"]
+    if "description" in promo_data:
+        update_data["description"] = promo_data["description"]
+    if "is_active" in promo_data:
+        update_data["is_active"] = promo_data["is_active"]
+    
+    if update_data:
+        await db.promos.update_one({"id": promo_id}, {"$set": update_data})
+    
+    return await db.promos.find_one({"id": promo_id}, {"_id": 0})
+
+@admin_router.delete("/promos/{promo_id}")
+async def admin_delete_promo(promo_id: str, admin: dict = Depends(get_admin_user)):
+    result = await db.promos.delete_one({"id": promo_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Promo not found")
+    return {"message": "Promo deleted"}
+
 @admin_router.post("/categories")
 async def admin_create_category(category_data: CategoryCreate, admin: dict = Depends(get_admin_user)):
     import uuid
