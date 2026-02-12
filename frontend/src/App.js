@@ -16,6 +16,8 @@ import AdminOrders from "./pages/admin/AdminOrders";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminHeroSlides from "./pages/admin/AdminHeroSlides";
 import AdminReviews from "./pages/admin/AdminReviews";
+import AdminMarquee from "./pages/admin/AdminMarquee";
+import AdminPromos from "./pages/admin/AdminPromos";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
               {/* Admin Routes */}
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
+              <Route path="/admin/marquee" element={<AdminMarquee />} />
+              <Route path="/admin/promos" element={<AdminPromos />} />
               <Route path="/admin/products" element={<AdminProducts />} />
               <Route path="/admin/categories" element={<AdminCategories />} />
               <Route path="/admin/reviews" element={<AdminReviews />} />
