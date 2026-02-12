@@ -101,6 +101,26 @@ export const adminAPI = {
   
   // Stats
   getStats: () => api.get('/admin/stats'),
+  
+  // Marquee Texts
+  getMarqueeTexts: () => api.get('/admin/marquee'),
+  updateMarqueeTexts: (texts) => api.put('/admin/marquee', { texts }),
+  
+  // Promo Codes
+  getPromos: () => api.get('/admin/promos'),
+  createPromo: (data) => api.post('/admin/promos', data),
+  updatePromo: (id, data) => api.put(`/admin/promos/${id}`, data),
+  deletePromo: (id) => api.delete(`/admin/promos/${id}`),
+};
+
+// Hero Slides API (public)
+export const heroSlidesAPI = {
+  getSlides: () => api.get('/hero-slides'),
+};
+
+// Marquee API (public)
+export const marqueeAPI = {
+  getTexts: () => api.get('/marquee'),
 };
 
 export default api;
