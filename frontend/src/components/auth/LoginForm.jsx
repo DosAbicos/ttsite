@@ -67,10 +67,6 @@ const LoginForm = () => {
       >
         {loading ? 'Signing in...' : 'Sign In'}
       </button>
-      
-      <div className="text-center text-xs text-gray-500 pt-2">
-        Admin: admin@ddebuut.com / admin123
-      </div>
     </form>
   );
 };

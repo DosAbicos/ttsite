@@ -14,7 +14,7 @@ const HomePage = () => {
       <main>
         <HeroCarousel />
         <CategoryCarousel />
-        <ProductGrid title="Retro Series" category="retro-series" limit={12} />
+        <ProductGrid title="Shop" category="" limit={12} />
       </main>
 
       <Footer />
