@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, ShoppingBag, ChevronDown, Settings, LogOut, Package } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
@@ -6,6 +6,9 @@ import { useAuth } from '../../context/AuthContext';
 import { languages } from '../../data/mock';
 import CartDrawer from '../cart/CartDrawer';
 import SearchModal from '../search/SearchModal';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Header = () => {
   const { cartCount, setIsCartOpen } = useCart();
@@ -15,6 +18,25 @@ const Header = () => {
   const [currentLang, setCurrentLang] = useState('English');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [marqueeTexts, setMarqueeTexts] = useState([
+    { id: '1', text: 'FREE SHIPPING OVER $39 (LIMITED TIME)' },
+    { id: '2', text: '45-DAY FREE RETURNS AND EXCHANGES' }
+  ]);
+
+  useEffect(() => {
+    loadMarqueeTexts();
+  }, []);
+
+  const loadMarqueeTexts = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/marquee`);
+      if (response.data && response.data.length > 0) {
+        setMarqueeTexts(response.data);
+      }
+    } catch (error) {
+      // Use defaults
+    }
+  };
 
   const handleLangSelect = (lang) => {
     setCurrentLang(lang.name);
