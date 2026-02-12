@@ -324,6 +324,44 @@ const AdminReviews = () => {
                 />
               </div>
 
+              {/* Images */}
+              <div>
+                <label className="block text-sm font-medium mb-2">Photos (optional)</label>
+                
+                {/* Uploaded images preview */}
+                {formData.images.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {formData.images.map((img, idx) => (
+                      <div key={idx} className="relative w-20 h-20">
+                        <img src={img} alt="" className="w-full h-full object-cover rounded" />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(idx)}
+                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                <label className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:border-gray-400 transition-colors">
+                  <Upload className="w-5 h-5 text-gray-400" />
+                  <span className="text-sm text-gray-500">
+                    {uploading ? 'Uploading...' : 'Upload Photos'}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageUpload}
+                    disabled={uploading}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
               {/* Verified Purchase */}
               <div className="flex items-center gap-2">
                 <input
