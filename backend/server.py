@@ -663,7 +663,7 @@ async def admin_update_review(review_id: str, review_data: dict, admin: dict = D
     
     update_data = {
         k: v for k, v in review_data.items() 
-        if k in ["product_id", "user_name", "rating", "title", "comment", "verified_purchase"] and v is not None
+        if k in ["product_id", "user_name", "rating", "title", "comment", "verified_purchase", "images"] and v is not None
     }
     
     if update_data:
