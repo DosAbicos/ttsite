@@ -253,6 +253,7 @@ const ProductPage = () => {
 
       <Footer />
       <AuthModal />
+      <PromoPopup productSlug={slug} />
     </div>
   );
 };
