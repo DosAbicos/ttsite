@@ -156,7 +156,10 @@ const ProductPage = () => {
 
             {/* Size Selection */}
             <div className="mb-6">
-              <label className="block text-sm font-medium mb-3">Size</label>
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm font-medium">Size</label>
+                <SizeChart />
+              </div>
               <div className="flex flex-wrap gap-2">
                 {product.sizes?.map((size) => (
                   <button
