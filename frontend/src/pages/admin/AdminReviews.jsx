@@ -47,6 +47,7 @@ const AdminReviews = () => {
       rating: 5,
       title: '',
       comment: '',
+      images: [],
       verified_purchase: true
     });
     setShowModal(true);
@@ -60,9 +61,34 @@ const AdminReviews = () => {
       rating: review.rating,
       title: review.title,
       comment: review.comment,
+      images: review.images || [],
       verified_purchase: review.verified_purchase
     });
     setShowModal(true);
+  };
+
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    
+    setUploading(true);
+    try {
+      const uploadPromises = files.map(file => adminAPI.uploadImage(file));
+      const results = await Promise.all(uploadPromises);
+      const newUrls = results.map(res => res.data.url);
+      setFormData(prev => ({ ...prev, images: [...prev.images, ...newUrls] }));
+    } catch (error) {
+      alert('Failed to upload images');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
   };
 
   const handleSubmit = async (e) => {
