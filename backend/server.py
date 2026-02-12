@@ -647,6 +647,7 @@ async def admin_create_review(review_data: dict, admin: dict = Depends(get_admin
         "rating": review_data.get("rating", 5),
         "title": review_data.get("title"),
         "comment": review_data.get("comment"),
+        "images": review_data.get("images", []),  # Array of image URLs
         "verified_purchase": review_data.get("verified_purchase", True),
         "created_at": datetime.utcnow(),
         "is_fake": True  # Mark as admin-created
