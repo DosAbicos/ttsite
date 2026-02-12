@@ -116,14 +116,27 @@ async def get_categories():
 async def get_hero_slides():
     """Get hero slides for homepage carousel"""
     slides = await db.hero_slides.find({}, {"_id": 0}).sort("order", 1).to_list(20)
-    if not slides:
-        # Return default slides if none in DB
-        return [
-            {"id": "slide-1", "image": "https://img-va.myshopline.com/image/store/1747638107971/5-11-0.jpg?w=1440&h=1800", "link": "/collections/minecraft", "order": 1},
-            {"id": "slide-2", "image": "https://img-va.myshopline.com/image/store/1747638107971/691FE659-7FF0-46BE-A41E-AF0A25223FA7-0.jpg?w=1170&h=1160", "link": "/collections/ykarchive-club", "order": 2},
-            {"id": "slide-3", "image": "https://img-va.myshopline.com/image/store/1747638107971/CBE13275-D619-4316-9973-01D84AFDC537-0.jpg?w=900&h=1350", "link": "/collections/holy-headen", "order": 3}
-        ]
     return slides
+
+# ============ Marquee Routes ============
+@api_router.get("/marquee")
+async def get_marquee_texts():
+    """Get marquee announcement texts"""
+    marquee = await db.settings.find_one({"key": "marquee_texts"}, {"_id": 0})
+    if marquee and marquee.get("texts"):
+        return marquee["texts"]
+    # Default texts
+    return [
+        {"id": "1", "text": "FREE SHIPPING OVER $39 (LIMITED TIME)"},
+        {"id": "2", "text": "45-DAY FREE RETURNS AND EXCHANGES"}
+    ]
+
+# ============ Promo Routes ============
+@api_router.get("/promo/active")
+async def get_active_promo():
+    """Get active promo code for popup"""
+    promo = await db.promos.find_one({"is_active": True}, {"_id": 0})
+    return promo
 
 @api_router.get("/categories/{slug}")
 async def get_category(slug: str):
