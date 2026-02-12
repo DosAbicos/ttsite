@@ -7,7 +7,7 @@ import requests
 import json
 
 def test_extended_api():
-    base_url = "https://ecommerce-staging.preview.emergentagent.com"
+    base_url = "https://songy-uploads.preview.emergentagent.com"
     
     print("🧪 Extended API Testing...")
     print("=" * 50)
