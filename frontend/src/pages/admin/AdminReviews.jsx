@@ -194,6 +194,12 @@ const AdminReviews = () => {
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-sm text-gray-600">{review.title}</span>
+                      {review.images && review.images.length > 0 && (
+                        <div className="flex gap-1 mt-1">
+                          <Image className="w-4 h-4 text-gray-400" />
+                          <span className="text-xs text-gray-400">{review.images.length} photo(s)</span>
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-4">
                       {review.verified_purchase ? (
