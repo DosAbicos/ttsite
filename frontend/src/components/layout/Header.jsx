@@ -51,8 +51,12 @@ const Header = () => {
           <div className="animate-marquee whitespace-nowrap py-2">
             {[...Array(10)].map((_, i) => (
               <span key={i} className="mx-8 text-xs font-medium tracking-wide text-black">
-                <span className="italic">FREE SHIPPING OVER $39 (LIMITED TIME)</span>
-                <span className="mx-8 italic">45-DAY FREE RETURNS AND EXCHANGES</span>
+                {marqueeTexts.filter(t => t.text && t.text.trim()).map((t, idx) => (
+                  <span key={`${i}-${idx}`}>
+                    <span className="italic">{t.text}</span>
+                    {idx < marqueeTexts.filter(t => t.text && t.text.trim()).length - 1 && <span className="mx-8">|</span>}
+                  </span>
+                ))}
               </span>
             ))}
           </div>
