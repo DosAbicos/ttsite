@@ -6,6 +6,8 @@ import Footer from '../components/layout/Footer';
 import AuthModal from '../components/auth/AuthModal';
 import RecommendedProducts from '../components/product/RecommendedProducts';
 import ProductReviews from '../components/product/ProductReviews';
+import SizeChart from '../components/product/SizeChart';
+import PromoPopup from '../components/product/PromoPopup';
 import { productsAPI } from '../services/api';
 import { useCart } from '../context/CartContext';
 
