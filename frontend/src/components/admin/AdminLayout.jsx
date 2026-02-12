@@ -10,7 +10,9 @@ import {
   Menu,
   X,
   Image,
-  MessageSquare
+  MessageSquare,
+  Type,
+  Tag
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -28,6 +30,8 @@ const AdminLayout = ({ children, activeTab }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
     { id: 'hero-slides', label: 'Hero Slides', icon: Image, path: '/admin/hero-slides' },
+    { id: 'marquee', label: 'Marquee Text', icon: Type, path: '/admin/marquee' },
+    { id: 'promos', label: 'Promo Codes', icon: Tag, path: '/admin/promos' },
     { id: 'products', label: 'Products', icon: Package, path: '/admin/products' },
     { id: 'categories', label: 'Categories', icon: FolderTree, path: '/admin/categories' },
     { id: 'reviews', label: 'Reviews', icon: MessageSquare, path: '/admin/reviews' },
