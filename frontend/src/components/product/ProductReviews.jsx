@@ -227,6 +227,23 @@ const ProductReviews = ({ productSlug }) => {
                 </span>
               </div>
               <p className="text-gray-600">{review.comment}</p>
+              
+              {/* Review Images */}
+              {review.images && review.images.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {review.images.map((img, idx) => (
+                    <a
+                      key={idx}
+                      href={img}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-20 h-20 rounded overflow-hidden hover:opacity-80 transition-opacity"
+                    >
+                      <img src={img} alt="" className="w-full h-full object-cover" />
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
